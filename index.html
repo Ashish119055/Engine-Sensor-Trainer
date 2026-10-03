@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="gu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>એન્જિન સેન્સર ટ્રેનર</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Vadodara:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#E4E8EA;--ink:#16202A;--muted:#5A6873;--panel:#FFFFFF;--line:#C9D1D6;--ecu:#1D4E89;--ref:#C8322B;--sig:#E3A600;--gnd:#6B4A2B;--scr:#0E2A2C;--trace:#7CF2C8;--grid:#1F4A4C;--ok:#1E7F4F;--no:#C8322B;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D1418;--ink:#E2E9EE;--muted:#93A3AE;--panel:#16212A;--line:#27363F;--ecu:#5B9BE6;--ok:#3FCB8A;--no:#FF6B5E}}
+:root[data-theme="dark"]{--bg:#0D1418;--ink:#E2E9EE;--muted:#93A3AE;--panel:#16212A;--line:#27363F;--ecu:#5B9BE6;--ok:#3FCB8A;--no:#FF6B5E}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}*,*::before,*::after{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Hind Vadodara","Noto Sans Gujarati",system-ui,sans-serif;font-size:16px;line-height:1.55;-webkit-tap-highlight-color:transparent}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:#1D4E89;color:#fff;display:flex;align-items:center;gap:10px;padding:10px 14px}
+.top::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:4px;background:linear-gradient(90deg,#C8322B 0 33%,#E3A600 33% 66%,#6B4A2B 66%)}
+.top button{background:none;border:0;color:#fff;font:inherit;font-size:1.3rem;padding:2px 8px;cursor:pointer;border-radius:8px}
+.top .t{font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.top .p{font-family:"Share Tech Mono",monospace}
+.wrap{max-width:880px;margin:0 auto;padding:18px 14px 48px}
+h1{font-size:clamp(1.7rem,7vw,2.6rem);line-height:1.08;margin:4px 0 8px;letter-spacing:-.01em}
+h2{font-size:1.35rem;line-height:1.25;margin:2px 0 6px}h3{font-size:1.05rem;margin:14px 0 6px}
+p{margin:0 0 10px;max-width:68ch}.muted{color:var(--muted)}
+.hero p{font-size:1.05rem}
+.map{background:var(--scr);border-radius:16px;padding:6px;margin:12px 0}
+.map svg{width:100%;height:auto;display:block}
+.hs{cursor:pointer}.hs circle{transition:r .15s}.hs:hover circle,.hs:focus circle{r:11}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.9rem;margin:6px 0 14px}.legend i{display:inline-block;width:22px;height:5px;border-radius:3px;vertical-align:middle;margin-right:6px}
+.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0 16px}
+.big{font:inherit;font-weight:600;padding:12px 8px;border-radius:12px;border:1.5px solid var(--ecu);background:var(--panel);color:var(--ink);cursor:pointer;line-height:1.3}
+.big small{display:block;font-weight:400;color:var(--muted);font-size:.8rem}
+.list{display:grid;gap:8px}
+.row{display:flex;gap:12px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer;color:inherit;text-align:left;font:inherit;width:100%}
+.ab{flex:0 0 58px;height:40px;border-radius:8px;background:var(--ecu);color:#fff;display:grid;place-items:center;font-family:"Share Tech Mono",monospace;font-size:.95rem}
+.row.done .ab{background:var(--ok)}.row .b{flex:1;min-width:0}.row .b b{display:block;line-height:1.3}.row small{color:var(--muted)}
+.grp{margin:18px 0 8px;font-weight:700;color:var(--ecu)}
+.tabs{display:flex;gap:6px;overflow-x:auto;margin:8px 0 12px;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}
+.tabs button{flex:0 0 auto;font:inherit;font-weight:600;font-size:.95rem;padding:8px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--ecu);border-color:var(--ecu);color:#fff}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.stage{background:var(--scr);border-radius:12px;padding:6px;margin-bottom:10px}.stage svg{width:100%;height:auto;display:block}
+.two{display:grid;gap:10px}@media(min-width:700px){.two{grid-template-columns:1.2fr 1fr}}
+.readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin:8px 0}
+.lcd{background:var(--scr);color:var(--trace);border-radius:10px;padding:7px 10px;font-family:"Share Tech Mono",monospace;font-size:1.35rem;line-height:1.2}
+.lcd small{display:block;font-family:"Hind Vadodara",sans-serif;font-size:.78rem;color:#9CC9BD}
+label.sl{display:block;margin:8px 0 2px;font-weight:600}label.sl b{font-family:"Share Tech Mono",monospace;color:var(--ecu)}
+input[type=range]{width:100%;accent-color:var(--ecu);height:34px}
+.btn{font:inherit;font-weight:600;font-size:.95rem;border:1.5px solid var(--line);background:transparent;color:var(--ink);padding:9px 14px;border-radius:10px;cursor:pointer}
+.btn.p{background:var(--ecu);border-color:var(--ecu);color:#fff}.btn.on{background:var(--sig);border-color:var(--sig);color:#211800}
+.btn:disabled{opacity:.45}
+.flex{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.col{display:grid;gap:8px}
+.opt{font:inherit;text-align:left;padding:11px 13px;border-radius:12px;border:1.5px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.opt.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 16%,transparent)}.opt.wrong{border-color:var(--no);background:color-mix(in srgb,var(--no) 12%,transparent)}
+.fb{font-weight:600;min-height:1.4em;margin:8px 0}.fb.ok{color:var(--ok)}.fb.no{color:var(--no)}
+.pr p{font-size:1.02rem}.pr ol{padding-left:22px;margin:0 0 10px}.pr li{margin-bottom:6px}
+.pins{display:grid;gap:6px;margin:8px 0}.pin{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;border:1px solid var(--line)}
+.pin i{width:34px;height:8px;border-radius:4px;flex:0 0 34px}
+.tbl{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.95rem}td,th{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{color:var(--muted);font-weight:600}
+td.v{font-family:"Share Tech Mono",monospace;white-space:nowrap}
+.meter{display:grid;gap:8px}.mrow{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:10px}
+.mrow button{flex:0 0 auto}.mrow .lcd{font-size:1.05rem;min-width:110px;text-align:right}
+.note{border-left:4px solid var(--sig);padding:8px 12px;background:color-mix(in srgb,var(--sig) 12%,transparent);border-radius:8px;margin:10px 0}
+.case{border-left:4px solid var(--ref);padding:10px 12px;background:color-mix(in srgb,var(--ref) 9%,transparent);border-radius:8px;margin-bottom:10px}
+.toast{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translate(-50%,160%);background:var(--ecu);color:#fff;padding:10px 16px;border-radius:12px;font-weight:600;max-width:calc(100% - 28px);transition:transform .3s;z-index:30}
+.toast.show{transform:translate(-50%,0)}
+.foot{margin-top:26px;color:var(--muted);font-size:.9rem}
+button:focus-visible,input:focus-visible,.hs:focus{outline:3px solid var(--sig);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+</style>
+</head>
+<body>
+<div class="top"><button id="back" aria-label="પાછળ">←</button><span class="t" id="ttl">એન્જિન સેન્સર ટ્રેનર</span><span class="p" id="tp"></span></div>
+<main class="wrap" id="app"></main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+const NTC_R=T=>2500*Math.exp(3540*(1/(T+273.15)-1/293.15));
+const NTC_V=T=>{const r=NTC_R(T);return 5*r/(r+2490)};
+const lin=(x,a,b)=>0.5+4*(x-a)/(b-a);
+const GROUPS=['પોઝિશન અને સ્પીડ','તાપમાન','પ્રેશર અને એરફ્લો','એક્ઝોસ્ટ અને એમિશન','સ્વીચ પ્રકારના સેન્સર'];
+const S=[
+{id:'ckp',ab:'CKP',g:0,gu:'ક્રેન્કશાફ્ટ પોઝિશન સેન્સર',en:'Crankshaft Position Sensor',fam:'induct',at:[100,200],
+ loc:'ફ્લાયવ્હીલ હાઉસિંગ કે ક્રેન્ક પુલી પાસે, 60-2 દાંતાવાળા રિલક્ટર વ્હીલની સામે.',
+ job:'એન્જિનની RPM અને પિસ્ટન TDC પર ક્યારે છે તે ECU ને કહે છે. આ સિગ્નલ વગર ECU ઇન્જેક્શન કરતું નથી, એટલે એન્જિન ચાલુ જ ન થાય.',
+ pr:['સેન્સરની અંદર કાયમી ચુંબક અને તેની ફરતે તારની કોઇલ હોય છે.','લોખંડનો દાંત સેન્સર પાસેથી પસાર થાય ત્યારે ચુંબકીય ક્ષેત્ર (ફ્લક્સ) વધે, અને દાંત વચ્ચેની ખાલી જગ્યા આવે ત્યારે ઘટે.','ફ્લક્સ બદલાય એટલે ફેરાડેના નિયમ મુજબ કોઇલમાં AC વોલ્ટેજ પેદા થાય. તેને ઇન્ડક્ટિવ (મેગ્નેટિક પિકઅપ) સેન્સર કહે છે.','વ્હીલ ઝડપથી ફરે તેમ વોલ્ટેજ અને ફ્રિક્વન્સી બંને વધે. 2 દાંત ખૂટે ત્યાં લાંબો ગેપ આવે, તે પરથી ECU નંબર 1 સિલિન્ડરની સ્થિતિ ઓળખે.'],
+ wires:[['સિગ્નલ +','sig'],['સિગ્નલ − (રીટર્ન)','gnd'],['શીલ્ડ (અર્થ)','sh']],
+ vals:[['કોઇલ રેઝિસ્ટન્સ','800–1200 Ω'],['ક્રેન્કિંગ (200 RPM)','1–3 V AC'],['આઇડલ (800 RPM)','આશરે 10 V AC'],['એર ગેપ','0.5–1.5 mm']],
+ sym:['એન્જિન ક્રેન્ક થાય પણ સ્ટાર્ટ ન થાય','ચાલતું એન્જિન અચાનક બંધ થાય','ટેકોમીટર સોય હલે નહીં'],dtc:'P0335 / P0336',
+ sim:{}},
+{id:'cmp',ab:'CMP',g:0,gu:'કેમશાફ્ટ પોઝિશન સેન્સર',en:'Camshaft Position Sensor',fam:'hall',at:[98,50],
+ loc:'સિલિન્ડર હેડના આગળના ભાગે, કેમશાફ્ટ પરના ટ્રિગર વ્હીલ કે ટાઇમિંગ પુલી પાસે.',
+ job:'ક્રેન્કશાફ્ટ 2 આંટા ફરે ત્યારે કેમ 1 આંટો ફરે. આ સેન્સર કહે છે કે નંબર 1 સિલિન્ડર કમ્પ્રેશન સ્ટ્રોકમાં છે કે એક્ઝોસ્ટમાં. તેથી ECU સાચા સિલિન્ડરમાં ઇન્જેક્શન કરે.',
+ pr:['હોલ ઇફેક્ટ: કરંટ વહેતી સેમિકન્ડક્ટર ચિપ પર ચુંબકીય ક્ષેત્ર લાગે ત્યારે ચિપની બાજુઓ વચ્ચે નાનો વોલ્ટેજ (હોલ વોલ્ટેજ) પેદા થાય.','ચિપની અંદરનું સર્કિટ આ નાના વોલ્ટેજને ચોખ્ખા ચોરસ (0 V કે 5 V) પલ્સમાં ફેરવે.','ટ્રિગર વ્હીલનો દાંત કે વેન ચુંબક અને ચિપ વચ્ચે આવે ત્યારે સિગ્નલ બદલાય.','ઇન્ડક્ટિવ સેન્સરથી ફરક: હોલ સેન્સરને પાવર સપ્લાય જોઈએ (3 વાયર) અને શૂન્ય ઝડપે પણ સાચું સિગ્નલ આપે.'],
+ wires:[['સપ્લાય 5 V','ref'],['સિગ્નલ','sig'],['ગ્રાઉન્ડ','gnd']],
+ vals:[['સપ્લાય','5 V (કેટલાકમાં 12 V)'],['સિગ્નલ','0 V / 5 V ચોરસ પલ્સ'],['પલ્સ સંખ્યા','કેમના દરેક આંટે 1 કે વધુ']],
+ sym:['લાંબું ક્રેન્કિંગ પછી સ્ટાર્ટ','લિમ્પ મોડ, પાવર ઓછો','ચેક એન્જિન લાઇટ'],dtc:'P0340 / P0341',
+ ref:'5.0 V',sim:{mode:'cmp'}},
+{id:'vss',ab:'VSS',g:0,gu:'વ્હીકલ સ્પીડ સેન્સર',en:'Vehicle Speed Sensor',fam:'hall',at:[66,236],
+ loc:'ગિયરબોક્સના આઉટપુટ શાફ્ટ પાસે (કેટલાક વાહનમાં ABS વ્હીલ સેન્સરથી).',
+ job:'વાહનની ઝડપ ECU, સ્પીડોમીટર અને ક્રૂઝ કંટ્રોલને આપે. ECU ગિયર પ્રમાણે ઇંધણ અને આઇડલ નિયંત્રણમાં તેનો ઉપયોગ કરે.',
+ pr:['આઉટપુટ શાફ્ટ પર ચુંબક કે દાંતાવાળું રિંગ હોય છે.','દરેક ચુંબક કે દાંત પસાર થાય ત્યારે હોલ ચિપ એક ચોરસ પલ્સ આપે.','ઝડપ વધે એટલે પલ્સની ફ્રિક્વન્સી (Hz) વધે, પણ પલ્સની ઊંચાઈ (5 V) એ જ રહે.','ECU એક સેકન્ડમાં આવતી પલ્સ ગણી km/h ગણે.'],
+ wires:[['સપ્લાય 12 V','ref'],['સિગ્નલ','sig'],['ગ્રાઉન્ડ','gnd']],
+ vals:[['સપ્લાય','12 V'],['સિગ્નલ','0 / 5 V પલ્સ'],['ફ્રિક્વન્સી','ઝડપના પ્રમાણમાં']],
+ sym:['સ્પીડોમીટર 0 બતાવે','ક્રૂઝ કંટ્રોલ કામ ન કરે','ગિયર બદલતાં ઝટકા'],dtc:'P0500',
+ ref:'12.4 V',sim:{mode:'vss'}},
+{id:'app',ab:'APP',g:0,gu:'એક્સિલરેટર પેડલ પોઝિશન સેન્સર',en:'Accelerator Pedal Position Sensor',fam:'pot',at:[28,236],
+ loc:'એક્સિલરેટર પેડલ એસેમ્બલીમાં જ (ડ્રાઇવ-બાય-વાયર).',
+ job:'ડ્રાઇવર કેટલું પેડલ દબાવે છે તે ECU ને કહે. ECU તે મુજબ ઇંધણનો જથ્થો નક્કી કરે. પેડલ અને પંપ વચ્ચે કોઈ કેબલ નથી.',
+ pr:['અંદર પોટેન્શિયોમીટર (વેરિયેબલ રેઝિસ્ટર) છે: રેઝિસ્ટિવ ટ્રેક પર સરકતો વાઇપર.','ટ્રેકના એક છેડે 5 V અને બીજા છેડે ગ્રાઉન્ડ. વાઇપર જ્યાં હોય ત્યાંનું વોલ્ટેજ સિગ્નલ બને.','સલામતી માટે 2 ટ્રેક હોય. ટ્રેક 2 નું વોલ્ટેજ ટ્રેક 1 નું અડધું. બંનેનો મેળ ન ખાય તો ECU લિમ્પ મોડમાં જાય.','નવા પેડલમાં ઘસારો ન થાય તે માટે હોલ પ્રકારના સેન્સર પણ આવે, પણ સિગ્નલ એવું જ હોય.'],
+ wires:[['5 V રેફ (ટ્રેક 1)','ref'],['સિગ્નલ 1','sig'],['ગ્રાઉન્ડ 1','gnd'],['5 V રેફ (ટ્રેક 2)','ref'],['સિગ્નલ 2','sig'],['ગ્રાઉન્ડ 2','gnd']],
+ vals:[['પેડલ છોડેલું','ટ્રેક 1: આશરે 0.5 V, ટ્રેક 2: 0.25 V'],['પૂરું દબાવેલું','ટ્રેક 1: આશરે 4.5 V, ટ્રેક 2: 2.25 V']],
+ sym:['પેડલ દબાવતાં RPM ન વધે','એન્જિન 1200 RPM પર અટકે (લિમ્પ)','ચેક એન્જિન લાઇટ'],dtc:'P2135 / P2122',
+ ref:'5.0 V',sig:x=>lin(x,0,100),tA:['પેડલ છોડેલું',0],tB:['પેડલ પૂરું દબાવેલું',100],unit:'%',sim:{kind:'pedal',dual:true}},
+{id:'egr',ab:'EGR-P',g:0,gu:'EGR વાલ્વ પોઝિશન / થ્રોટલ ફ્લેપ સેન્સર',en:'EGR Valve / Throttle Flap Position Sensor',fam:'pot',at:[258,112],
+ loc:'EGR વાલ્વ અને ઇનટેક થ્રોટલ ફ્લેપ પર, મોટર સાથે જ.',
+ job:'EGR વાલ્વ કે થ્રોટલ ફ્લેપ ખરેખર કેટલો ખુલ્યો તે ECU ને પાછું કહે (ફીડબેક). ECU માગ્યા મુજબ ખુલ્યો કે નહીં તે ચકાસે.',
+ pr:['વાલ્વના શાફ્ટ સાથે પોટેન્શિયોમીટરનો વાઇપર કે હોલ ચુંબક જોડાયેલો હોય.','વાલ્વ ખૂલે તેમ સિગ્નલ વોલ્ટેજ 0.5 V થી 4.5 V તરફ બદલાય.','ECU ઇચ્છિત ખૂલણ અને વાસ્તવિક ખૂલણ સરખાવે. ફરક વધુ હોય તો કાર્બન જામ કે મોટર ખામીનો કોડ આવે.'],
+ wires:[['5 V રેફ','ref'],['સિગ્નલ','sig'],['ગ્રાઉન્ડ','gnd'],['મોટર +','m'],['મોટર −','m']],
+ vals:[['વાલ્વ બંધ','આશરે 0.5 V'],['વાલ્વ પૂરો ખુલ્લો','આશરે 4.5 V']],
+ sym:['પાવર ઓછો, કાળો ધુમાડો','EGR વાલ્વ ચોંટવાનો કોડ','લિમ્પ મોડ'],dtc:'P0403 / P0405',
+ ref:'5.0 V',sig:x=>lin(x,0,100),tA:['વાલ્વ બંધ',0],tB:['વાલ્વ પૂરો ખુલ્લો',100],unit:'%',sim:{kind:'flap'}},
+{id:'ect',ab:'ECT',g:1,gu:'એન્જિન કૂલન્ટ ટેમ્પરેચર સેન્સર',en:'Engine Coolant Temperature Sensor',fam:'ntc',at:[268,70],
+ loc:'થર્મોસ્ટેટ હાઉસિંગ કે સિલિન્ડર હેડના પાણીના પેસેજમાં.',
+ job:'એન્જિન કેટલું ગરમ છે તે ECU ને કહે. ઠંડા એન્જિને ECU વધુ ઇંધણ, ગ્લો પ્લગ સમય અને ઊંચું આઇડલ આપે. રેડિએટર ફેન પણ આ પરથી ચાલુ થાય.',
+ pr:['અંદર NTC થર્મિસ્ટર છે: NTC એટલે નેગેટિવ ટેમ્પરેચર કોએફિશિયન્ટ. તાપમાન વધે તેમ રેઝિસ્ટન્સ ઘટે.','ECU અંદરના ફિક્સ રેઝિસ્ટર (પુલ-અપ) દ્વારા 5 V મોકલે. સેન્સર અને પુલ-અપ મળીને વોલ્ટેજ ડિવાઇડર બને.','ઠંડું: રેઝિસ્ટન્સ વધુ, સિગ્નલ વોલ્ટેજ વધુ (આશરે 4.5 V). ગરમ: રેઝિસ્ટન્સ ઓછું, વોલ્ટેજ ઓછું (આશરે 0.5 V).','ECU આ વોલ્ટેજને પોતાના ટેબલથી °C માં ફેરવે.'],
+ wires:[['સિગ્નલ (5 V પુલ-અપથી)','sig'],['ગ્રાઉન્ડ','gnd']],
+ vals:[['-20°C','આશરે 22 kΩ, 4.5 V'],['20°C','આશરે 2.5 kΩ, 2.5 V'],['80°C','આશરે 320 Ω, 0.6 V'],['100°C','આશરે 190 Ω, 0.35 V']],
+ sym:['ઠંડા એન્જિને સ્ટાર્ટ મુશ્કેલ, ધુમાડો','રેડિએટર ફેન સતત ચાલે','તાપમાન ગેજ ખોટું બતાવે'],dtc:'P0115 / P0117 / P0118',
+ sim:{tmin:-30,tmax:120,t0:85,med:'કૂલન્ટ',c:'#7EC8F0'}},
+{id:'iat',ab:'IAT',g:1,gu:'ઇનટેક એર ટેમ્પરેચર સેન્સર',en:'Intake Air Temperature Sensor',fam:'ntc',at:[94,22],
+ loc:'એર ફિલ્ટર પછીની પાઇપમાં, ઘણી વાર MAF કે બૂસ્ટ સેન્સર સાથે જ.',
+ job:'અંદર જતી હવાનું તાપમાન આપે. ઠંડી હવા ઘટ્ટ હોય, તેમાં ઓક્સિજન વધુ. ECU ઇંધણ અને બૂસ્ટ તે મુજબ સુધારે.',
+ pr:['ECT જેવો જ NTC થર્મિસ્ટર, પણ હવામાં ઝડપી પ્રતિભાવ માટે નાનો ખુલ્લો બીડ.','તાપમાન વધે તેમ રેઝિસ્ટન્સ અને સિગ્નલ વોલ્ટેજ ઘટે.','ટર્બો પછીનો સેન્સર ઇન્ટરકૂલર બરાબર ઠંડક આપે છે કે નહીં તે પણ જણાવે.'],
+ wires:[['સિગ્નલ (5 V પુલ-અપથી)','sig'],['ગ્રાઉન્ડ','gnd']],
+ vals:[['20°C','આશરે 2.5 kΩ, 2.5 V'],['40°C','આશરે 1.1 kΩ, 1.5 V']],
+ sym:['ઠંડીમાં સ્ટાર્ટ મુશ્કેલ','ધુમાડો વધુ','બૂસ્ટ ઓછો'],dtc:'P0110 / P0112 / P0113',
+ sim:{tmin:-30,tmax:80,t0:30,med:'હવા',c:'#BFD7E0'}},
+{id:'fts',ab:'FTS',g:1,gu:'ફ્યુઅલ ટેમ્પરેચર સેન્સર',en:'Fuel Temperature Sensor',fam:'ntc',at:[40,116],
+ loc:'હાઇ પ્રેશર પંપ પર કે ફ્યુઅલ રીટર્ન લાઇનમાં.',
+ job:'ગરમ ડીઝલ પાતળું થાય અને તેનું પ્રમાણ ઘટે. ECU ઇંધણનો જથ્થો સુધારે અને ખૂબ ગરમ ડીઝલ પર પાવર ઘટાડી પંપનું રક્ષણ કરે.',
+ pr:['NTC થર્મિસ્ટર: તાપમાન વધે તો રેઝિસ્ટન્સ ઘટે.','ECU 5 V પુલ-અપ દ્વારા સિગ્નલ વાંચે, ECT જેવું જ સર્કિટ.','ડીઝલ 80°C થી ઉપર જાય તો ઘણા ECU પાવર મર્યાદિત કરે.'],
+ wires:[['સિગ્નલ (5 V પુલ-અપથી)','sig'],['ગ્રાઉન્ડ','gnd']],
+ vals:[['20°C','આશરે 2.5 kΩ, 2.5 V'],['60°C','આશરે 0.6 kΩ, 0.9 V']],
+ sym:['ગરમ એન્જિને પાવર ઓછો','સ્ટાર્ટ મુશ્કેલ'],dtc:'P0180 / P0182 / P0183',
+ sim:{tmin:-20,tmax:100,t0:40,med:'ડીઝલ',c:'#E8C64A'}},
+{id:'map',ab:'MAP',g:2,gu:'બૂસ્ટ પ્રેશર / MAP સેન્સર',en:'Boost Pressure / Manifold Absolute Pressure',fam:'press',at:[232,26],
+ loc:'ઇનટેક મેનિફોલ્ડ પર, ઇન્ટરકૂલર પછી.',
+ job:'ટર્બો કેટલું દબાણ (બૂસ્ટ) આપે છે તે માપે. ECU ઇંધણ અને ટર્બોના વેસ્ટગેટ કે VGT ને નિયંત્રિત કરે.',
+ pr:['અંદર પાતળો સિલિકોન ડાયાફ્રામ છે. એક બાજુ શૂન્યાવકાશ (વેક્યુમ રેફરન્સ), બીજી બાજુ મેનિફોલ્ડનું દબાણ.','દબાણ વધે તેમ ડાયાફ્રામ વળે. તેના પર લગાવેલા 4 સ્ટ્રેન ગેજ (વ્હીટસ્ટોન બ્રિજ) ખેંચાય કે દબાય અને તેમનો રેઝિસ્ટન્સ બદલાય. તેને પીઝો-રેઝિસ્ટિવ સિદ્ધાંત કહે છે.','અંદરની ચિપ આ ફેરફારને 0.5–4.5 V સીધા (લીનિયર) સિગ્નલમાં ફેરવે.','"એબ્સોલ્યુટ" એટલે શૂન્યાવકાશથી માપ. એન્જિન બંધ હોય ત્યારે પણ તે હવાનું દબાણ (આશરે 100 kPa) બતાવે.'],
+ wires:[['5 V રેફ','ref'],['સિગ્નલ','sig'],['ગ્રાઉન્ડ','gnd']],
+ vals:[['એન્જિન બંધ','100 kPa, આશરે 1.6 V'],['આઇડલ','આશરે 105 kPa'],['ફુલ લોડ બૂસ્ટ','200–250 kPa, આશરે 3.3 V']],
+ sym:['પાવર ઓછો, લિમ્પ મોડ','કાળો ધુમાડો','ઓવરબૂસ્ટ કોડ'],dtc:'P0235 / P0237 / P0238',
+ ref:'5.0 V',sig:x=>lin(x,20,300),tA:['એન્જિન બંધ (100 kPa)',100],tB:['ફુલ બૂસ્ટ (230 kPa)',230],unit:'kPa',
+ sim:{pmin:20,pmax:300,p0:100,unit:'kPa',med:'હવા',c:'#BFD7E0',marks:[[100,'વાતાવરણ'],[230,'ફુલ બૂસ્ટ']]}},
+{id:'rps',ab:'RPS',g:2,gu:'ફ્યુઅલ રેલ પ્રેશર સેન્સર',en:'Common Rail Pressure Sensor',fam:'press',at:[200,46],
+ loc:'કોમન રેલના એક છેડે સ્ક્રૂથી લગાવેલો.',
+ job:'CRDI રેલમાં ડીઝલનું દબાણ (2000 bar સુધી) માપે. ECU પ્રેશર કંટ્રોલ વાલ્વ કે મીટરિંગ યુનિટથી ઇચ્છિત દબાણ જાળવે.',
+ pr:['સ્ટીલનો જાડો ડાયાફ્રામ, તેના પર સ્ટ્રેન ગેજ (પીઝો-રેઝિસ્ટિવ) બ્રિજ.','દબાણ વધે એટલે ડાયાફ્રામ સહેજ ખેંચાય અને બ્રિજનું સંતુલન બગડે.','અંદરની ચિપ નાના સિગ્નલને મોટું કરી 0.5–4.5 V આપે.','આ સેન્સર ખૂબ મહત્ત્વનો છે: ખોટું વાંચન એટલે ખોટું ઇન્જેક્શન. ઘણી વાર સેન્સર રેલ સાથે જ બદલાય.'],
+ wires:[['5 V રેફ','ref'],['સિગ્નલ','sig'],['ગ્રાઉન્ડ','gnd']],
+ vals:[['એન્જિન બંધ','0 bar, 0.5 V'],['ક્રેન્કિંગ','250–300 bar'],['આઇડલ','300–400 bar, આશરે 1.3 V'],['ફુલ લોડ','1600–1800 bar']],
+ sym:['એન્જિન સ્ટાર્ટ ન થાય','પાવર ઓછો, લિમ્પ મોડ','ચાલતું એન્જિન બંધ પડે'],dtc:'P0190 / P0192 / P0193',
+ ref:'5.0 V',sig:x=>lin(x,0,2000),tA:['આઇડલ (350 bar)',350],tB:['ફુલ લોડ (1600 bar)',1600],unit:'bar',
+ sim:{pmin:0,pmax:2000,p0:350,unit:'bar',med:'ડીઝલ',c:'#E8C64A',marks:[[300,'ક્રેન્કિંગ'],[1700,'ફુલ લોડ']]}},
+{id:'maf',ab:'MAF',g:2,gu:'માસ એર ફ્લો સેન્સર',en:'Mass Air Flow Sensor (Hot Film)',fam:'maf',at:[70,22],
+ loc:'એર ફિલ્ટર બોક્સ પછી, ટર્બો પહેલાંની ઇનટેક પાઇપમાં.',
+ job:'એન્જિનમાં કેટલી હવા (kg/h) જાય છે તે માપે. ડીઝલમાં તેનો મુખ્ય ઉપયોગ EGR નિયંત્રણ અને ધુમાડો મર્યાદિત કરવા થાય.',
+ pr:['અંદર પાતળી ગરમ ફિલ્મ (હોટ ફિલ્મ) છે, જે હવાના તાપમાન કરતાં આશરે 100°C વધુ ગરમ રખાય.','હવા પસાર થાય તેમ ફિલ્મ ઠંડી પડે. તાપમાન જાળવવા સર્કિટ વધુ કરંટ આપે.','વધુ હવા એટલે વધુ ઠંડક, વધુ કરંટ, વધુ સિગ્નલ વોલ્ટેજ.','હવા ઠંડી હોય તો તેનું દળ (mass) વધુ અને ઠંડક વધુ. એટલે આ સેન્સર સીધું હવાનું દળ માપે.'],
+ wires:[['12 V સપ્લાય','ref'],['ગ્રાઉન્ડ','gnd'],['5 V રેફ','ref'],['સિગ્નલ','sig'],['IAT સિગ્નલ','sig']],
+ vals:[['એન્જિન બંધ','આશરે 1.0 V'],['આઇડલ','15–25 kg/h, આશરે 1.5 V'],['ફુલ લોડ','400–600 kg/h, 4 V ઉપર']],
+ sym:['કાળો ધુમાડો','પાવર ઓછો','આઇડલ પર ઝટકા'],dtc:'P0100 / P0101 / P0102',
+ ref:'12.4 V',sig:x=>1+3.5*Math.sqrt(x/600),tA:['આઇડલ (20 kg/h)',20],tB:['3000 RPM (300 kg/h)',300],unit:'kg/h',sim:{}},
+{id:'dpf',ab:'DPF ΔP',g:3,gu:'DPF ડિફરન્શિયલ પ્રેશર સેન્સર',en:'DPF Differential Pressure Sensor',fam:'press',at:[302,212],
+ loc:'ચેસિસ પર, DPF ની આગળ અને પાછળ જતી બે નાની પાઇપ સાથે.',
+ job:'DPF ની આગળ અને પાછળના દબાણનો તફાવત માપે. ફિલ્ટરમાં કાજળ (soot) ભરાય તેમ તફાવત વધે. ECU તે પરથી રીજનરેશન (કાજળ બાળવું) શરૂ કરે.',
+ pr:['ડાયાફ્રામની એક બાજુ DPF પહેલાંનું દબાણ, બીજી બાજુ પછીનું દબાણ લાગે.','ડાયાફ્રામ માત્ર તફાવત પ્રમાણે વળે, એટલે તેને ડિફરન્શિયલ સેન્સર કહે છે.','સ્ટ્રેન ગેજ બ્રિજ અને ચિપ 0.5–4.5 V સિગ્નલ આપે.','પાઇપ ફાટે કે ઊલટી લાગે તો ખોટું વાંચન આવે. તપાસમાં પહેલાં પાઇપ જુઓ.'],
+ wires:[['5 V રેફ','ref'],['સિગ્નલ','sig'],['ગ્રાઉન્ડ','gnd']],
+ vals:[['સાફ DPF, આઇડલ','0.5–2 kPa'],['સાફ DPF, 3000 RPM','8–15 kPa'],['ભરાયેલું DPF','25 kPa થી વધુ']],
+ sym:['DPF લાઇટ વારંવાર','પાવર ઓછો','ઇંધણ વપરાશ વધુ'],dtc:'P2452 / P2453 / P2463',
+ ref:'5.0 V',sig:x=>lin(x,0,100),tA:['આઇડલ (1 kPa)',1],tB:['3000 RPM (12 kPa)',12],unit:'kPa',
+ sim:{pmin:0,pmax:60,p0:5,unit:'kPa',med:'એક્ઝોસ્ટ ગેસ',c:'#9AA59E',marks:[[12,'સાફ'],[30,'ભરાયેલું']],lin:[0,100]}},
+{id:'knk',ab:'KS',g:3,gu:'નોક સેન્સર',en:'Knock Sensor',fam:'knock',at:[190,142],
+ loc:'સિલિન્ડર બ્લોકની બાજુમાં, બોલ્ટથી સીધો.',
+ job:'એન્જિનમાં ખોટું દહન (નોકિંગ / ટકટક) થાય ત્યારે કંપન પકડે. પેટ્રોલમાં ECU ઇગ્નિશન મોડું કરે; કેટલાક CRDI ડીઝલમાં ઇન્જેક્ટરની પાઇલટ માત્રા સુધારવા વપરાય.',
+ pr:['અંદર પીઝોઇલેક્ટ્રિક ક્રિસ્ટલ છે. ક્રિસ્ટલ પર દબાણ કે કંપન આવે એટલે તે પોતે વોલ્ટેજ પેદા કરે. પાવર સપ્લાયની જરૂર નથી.','સામાન્ય ચાલમાં નાનું સિગ્નલ, નોકિંગમાં (આશરે 6–15 kHz) મોટા ઝટકા.','બોલ્ટનો ટૉર્ક ખૂબ મહત્ત્વનો: ઢીલો સેન્સર કંપન બરાબર પકડતો નથી.'],
+ wires:[['સિગ્નલ','sig'],['સિગ્નલ રીટર્ન','gnd'],['શીલ્ડ','sh']],
+ vals:[['રેઝિસ્ટન્સ','ખૂબ ઊંચો (MΩ) કે OL'],['સામાન્ય ચાલ','થોડા mV'],['નોકિંગ','100 mV થી વધુ ઝટકા'],['માઉન્ટિંગ ટૉર્ક','આશરે 20 Nm (મેન્યુઅલ મુજબ)']],
+ sym:['ટકટક અવાજ','પાવર ઓછો','ચેક એન્જિન લાઇટ'],dtc:'P0325 / P0327',sim:{}},
+{id:'o2',ab:'O₂',g:3,gu:'ઓક્સિજન (લેમ્ડા) સેન્સર',en:'Oxygen / Lambda Sensor',fam:'o2',at:[332,168],
+ loc:'એક્ઝોસ્ટ પાઇપમાં, ટર્બો પછી અને કેટાલિટિક કન્વર્ટર પહેલાં.',
+ job:'એક્ઝોસ્ટમાં બચેલો ઓક્સિજન માપી ઇંધણ-હવાનું મિશ્રણ સમૃદ્ધ (rich) છે કે પાતળું (lean) તે કહે.',
+ pr:['ઝિર્કોનિયા સિરામિકની બંને બાજુ પ્લેટિનમ ઇલેક્ટ્રોડ. એક બાજુ એક્ઝોસ્ટ, બીજી બાજુ બહારની હવા.','આશરે 350°C થી ઉપર ઝિર્કોનિયામાંથી ઓક્સિજન આયન પસાર થઈ શકે. બંને બાજુ ઓક્સિજનનો ફરક જેટલો વધુ, વોલ્ટેજ એટલો વધુ.','રિચ મિશ્રણ: એક્ઝોસ્ટમાં ઓક્સિજન ઓછો, આશરે 0.9 V. લીન: ઓક્સિજન વધુ, આશરે 0.1 V.','જલ્દી ગરમ થવા અંદર હીટર હોય. ડીઝલ હંમેશા લીન ચાલે, એટલે ડીઝલમાં વાઇડબેન્ડ લેમ્ડા સેન્સર વપરાય; સિદ્ધાંત એ જ ઝિર્કોનિયા.'],
+ wires:[['સિગ્નલ','sig'],['સિગ્નલ ગ્રાઉન્ડ','gnd'],['હીટર 12 V','ref'],['હીટર કંટ્રોલ','gnd']],
+ vals:[['હીટર રેઝિસ્ટન્સ','3–6 Ω'],['રિચ (λ < 1)','0.7–0.9 V'],['લીન (λ > 1)','0.1–0.3 V'],['ક્લોઝ્ડ લૂપ','0.1 ↔ 0.9 V ઝડપથી બદલાય']],
+ sym:['ઇંધણ વપરાશ વધુ','PUC ફેલ','ચેક એન્જિન લાઇટ'],dtc:'P0130 / P0135',sim:{}},
+{id:'egt',ab:'EGT',g:3,gu:'એક્ઝોસ્ટ ગેસ ટેમ્પરેચર સેન્સર',en:'Exhaust Gas Temperature Sensor',fam:'tc',at:[322,118],
+ loc:'ટર્બો પહેલાં અને DPF પહેલાં એક્ઝોસ્ટમાં.',
+ job:'એક્ઝોસ્ટનું તાપમાન માપી ટર્બોને વધુ ગરમીથી બચાવે અને DPF રીજનરેશન નિયંત્રિત કરે.',
+ pr:['થર્મોકપલ: બે જુદી ધાતુના તાર એક છેડે જોડેલા (ગરમ જંક્શન).','જંક્શન ગરમ થાય એટલે બે ધાતુ વચ્ચે નાનો વોલ્ટેજ પેદા થાય. તેને સીબેક ઇફેક્ટ કહે છે.','K-પ્રકાર (ક્રોમેલ-એલુમેલ) માં આશરે 0.041 mV પ્રતિ °C.','કેટલાક વાહનોમાં થર્મોકપલને બદલે PTC (Pt200) રેઝિસ્ટન્સ પ્રકારનો સેન્સર આવે.'],
+ wires:[['ક્રોમેલ (+)','sig'],['એલુમેલ (−)','gnd']],
+ vals:[['આઇડલ','150–250°C, આશરે 8 mV'],['રીજનરેશન','600–650°C, આશરે 25 mV'],['મહત્તમ','800–850°C']],
+ sym:['DPF રીજનરેશન ન થાય','લિમ્પ મોડ'],dtc:'P0544 / P2032',sim:{}},
+{id:'nox',ab:'NOx',g:3,gu:'NOx સેન્સર',en:'NOx Sensor (BS-VI / SCR)',fam:'nox',at:[346,236],
+ loc:'SCR કેટાલિસ્ટ પહેલાં અને પછી (બે સેન્સર), પોતાના કંટ્રોલ મોડ્યુલ સાથે.',
+ job:'એક્ઝોસ્ટમાં નાઇટ્રોજન ઓક્સાઇડ (NOx) ppm માં માપે. ECU એડબ્લૂ (યુરિયા) ની માત્રા નક્કી કરે અને SCR બરાબર કામ કરે છે કે નહીં તે ચકાસે.',
+ pr:['લેમ્ડા જેવો જ ઝિર્કોનિયા સિરામિક, પણ બે ખાનાં (ચેમ્બર) વાળો.','પહેલા ખાનામાં ઓક્સિજન પમ્પ કરીને કાઢી નખાય.','બીજા ખાનામાં NOx ને તોડી તેમાંથી છૂટો પડેલો ઓક્સિજન માપાય. તે પરથી NOx ppm ગણાય.','સિગ્નલ નાનું અને નાજુક હોવાથી સેન્સરનું પોતાનું મોડ્યુલ હોય, જે ECU ને CAN બસથી ડિજિટલ ડેટા મોકલે.'],
+ wires:[['12 V સપ્લાય','ref'],['ગ્રાઉન્ડ','gnd'],['CAN High','sig'],['CAN Low','sig']],
+ vals:[['એન્જિન આઉટ (SCR પહેલાં)','200–1500 ppm'],['SCR પછી (સારું)','પહેલાંના 5–10%'],['ડ્યૂ પોઇન્ટ પહેલાં','સેન્સર "તૈયાર નથી"']],
+ sym:['એડબ્લૂ વપરાશ ખોટો','MIL અને પાવર મર્યાદા','PUC/એમિશન ફેલ'],dtc:'P2200 / P229F',sim:{}},
+{id:'ops',ab:'OPS',g:4,gu:'ઓઇલ પ્રેશર સ્વીચ',en:'Oil Pressure Switch',fam:'sw',at:[180,212],
+ loc:'સિલિન્ડર બ્લોકની મુખ્ય ઓઇલ ગેલેરી પર, ઓઇલ ફિલ્ટર પાસે.',
+ job:'ઓઇલ પ્રેશર ખૂબ ઓછું થાય તો ડેશબોર્ડ પર લાલ ઓઇલ લાઇટ ચાલુ કરે. એન્જિન બચાવવાની છેલ્લી ચેતવણી.',
+ pr:['અંદર ડાયાફ્રામ અને સ્પ્રિંગવાળો કોન્ટેક્ટ. સામાન્ય સ્થિતિમાં કોન્ટેક્ટ બંધ (Normally Closed).','એન્જિન બંધ: પ્રેશર નથી, કોન્ટેક્ટ બંધ, લેમ્પને ગ્રાઉન્ડ મળે, લાઇટ ચાલુ.','ઓઇલ પ્રેશર આશરે 0.3–0.5 bar થી વધે એટલે ડાયાફ્રામ કોન્ટેક્ટ ખોલે, લાઇટ બંધ.','નવા વાહનોમાં સ્વીચને બદલે પ્રેશર સેન્સર (0.5–4.5 V) પણ આવે.'],
+ wires:[['લેમ્પ સિગ્નલ','sig'],['બોડી (ગ્રાઉન્ડ)','gnd']],
+ vals:[['એન્જિન બંધ','કન્ટિન્યુટી 0 Ω, લાઇટ ચાલુ'],['એન્જિન ચાલુ','OL, લાઇટ બંધ'],['સ્વીચ ખૂલવાનું પ્રેશર','0.3–0.5 bar']],
+ sym:['ચાલુ એન્જિને ઓઇલ લાઇટ','ઓઇલ લાઇટ ક્યારેય ન આવે'],dtc:'P0520 (સેન્સર પ્રકારમાં)',sim:{}},
+{id:'wif',ab:'WIF',g:4,gu:'વોટર ઇન ફ્યુઅલ સેન્સર',en:'Water in Fuel Sensor',fam:'wif',at:[40,166],
+ loc:'ફ્યુઅલ ફિલ્ટરના તળિયે (સેડિમેન્ટર બાઉલમાં).',
+ job:'ડીઝલમાં પાણી ભેગું થાય તો ડેશબોર્ડ પર ચેતવણી આપે. પાણી CRDI પંપ અને ઇન્જેક્ટરને ઝડપથી બગાડે.',
+ pr:['પાણી ડીઝલ કરતાં ભારે, એટલે ફિલ્ટરના તળિયે બેસે.','તળિયે બે ધાતુના પ્રોબ છે. ડીઝલ વીજળી વહન કરતું નથી, પાણી કરે છે.','પાણીનું સ્તર પ્રોબ સુધી પહોંચે એટલે બંને પ્રોબ વચ્ચે કરંટ વહે અને લાઇટ ચાલુ થાય.','ઉપાય: ફિલ્ટરનો ડ્રેઇન સ્ક્રૂ ખોલી પાણી કાઢો, પછી બ્લીડિંગ કરો.'],
+ wires:[['સપ્લાય','ref'],['સિગ્નલ','sig'],['ગ્રાઉન્ડ','gnd']],
+ vals:[['સૂકું (માત્ર ડીઝલ)','પ્રોબ વચ્ચે OL, લાઇટ બંધ'],['પાણી પ્રોબ સુધી','ઓછો રેઝિસ્ટન્સ, લાઇટ ચાલુ']],
+ sym:['WIF લાઇટ ચાલુ','એન્જિન ઝટકા, પાવર ઓછો (પાણી હોય તો)'],dtc:'P2269',sim:{}}
+];
+const FAMN={induct:'ઇન્ડક્ટિવ (મેગ્નેટિક)',hall:'હોલ ઇફેક્ટ',pot:'પોટેન્શિયોમીટર',ntc:'NTC થર્મિસ્ટર',press:'પીઝો-રેઝિસ્ટિવ પ્રેશર',maf:'હોટ ફિલ્મ',knock:'પીઝોઇલેક્ટ્રિક',o2:'ઝિર્કોનિયા',tc:'થર્મોકપલ',nox:'ઝિર્કોનિયા + CAN',sw:'ડાયાફ્રામ સ્વીચ',wif:'કન્ડક્ટિવ પ્રોબ'};
+const WC={ref:'var(--ref)',sig:'var(--sig)',gnd:'var(--gnd)',sh:'#8A969E',m:'#5B6CC4'};
+const CASES=[
+{c:'ગરમ એન્જિન, પણ રેડિએટર ફેન સતત ચાલે છે અને ઠંડા એન્જિન જેવો ધુમાડો.',dtc:'P0118',d:[['કૂલન્ટ તાપમાન (સ્કેન)','-40°C'],['IAT','34°C'],['સિગ્નલ વોલ્ટેજ','4.98 V']],a:'ect',o:['ect','iat','map','fts']},
+{c:'એન્જિન ક્રેન્ક થાય છે પણ બિલકુલ સ્ટાર્ટ થતું નથી. ડીઝલ અને બેટરી બરાબર છે.',dtc:'P0335',d:[['ક્રેન્કિંગ વખતે એન્જિન RPM (સ્કેન)','0'],['રેલ પ્રેશર','0 bar'],['બેટરી વોલ્ટેજ','10.6 V']],a:'ckp',o:['ckp','cmp','rps','app']},
+{c:'એન્જિન 6–8 સેકન્ડ ક્રેન્ક થયા પછી જ સ્ટાર્ટ થાય, પછી બરાબર ચાલે.',dtc:'P0340',d:[['ક્રેન્કિંગ RPM','220'],['કેમ સિગ્નલ','મળતું નથી'],['રેલ પ્રેશર','280 bar']],a:'cmp',o:['cmp','ckp','ect','map']},
+{c:'એન્જિન લિમ્પ મોડમાં, આઇડલ પર પણ સ્કેન ટૂલ અશક્ય રેલ પ્રેશર બતાવે છે.',dtc:'P0193',d:[['રેલ પ્રેશર (સ્કેન)','2150 bar (સ્થિર)'],['ઇચ્છિત રેલ પ્રેશર','350 bar'],['સિગ્નલ વોલ્ટેજ','4.95 V']],a:'rps',o:['rps','map','dpf','maf']},
+{c:'કાળો ધુમાડો અને પાવર ઓછો. એર ફિલ્ટર નવું છે.',dtc:'P0102',d:[['હવાનો પ્રવાહ (આઇડલ)','0 kg/h'],['બૂસ્ટ','104 kPa'],['EGR ખૂલણ','0%']],a:'maf',o:['maf','map','iat','egr']},
+{c:'પેડલ દબાવતાં RPM વધતી નથી, એન્જિન 1200 RPM પર અટકે છે.',dtc:'P2135',d:[['પેડલ ટ્રેક 1','3.8 V'],['પેડલ ટ્રેક 2','0.3 V'],['પેડલ સ્થિતિ','પૂરું દબાવેલું']],a:'app',o:['app','egr','ckp','vss']},
+{c:'હાઇવે પર ખેંચાણ નથી, લિમ્પ મોડ. ટર્બોમાં લીક મળ્યું નથી.',dtc:'P0238',d:[['બૂસ્ટ (એન્જિન બંધ)','310 kPa'],['વાતાવરણ દબાણ','100 kPa'],['સિગ્નલ','4.97 V']],a:'map',o:['map','dpf','rps','maf']},
+{c:'DPF ચેતવણી ક્યારેય આવતી નથી, પણ ઇંધણ વપરાશ વધ્યો અને DPF ભરાયેલું લાગે છે.',dtc:'P2452',d:[['DPF ΔP (3000 RPM)','0.0 kPa'],['EGT','420°C'],['કાજળ ગણતરી','ગણી શકાતી નથી']],a:'dpf',o:['dpf','egt','nox','map']},
+{c:'આઇડલ પર લાલ ઓઇલ લાઇટ ચાલુ, પણ મિકેનિકલ ગેજ પર ઓઇલ પ્રેશર 2.6 bar છે.',dtc:'—',d:[['મિકેનિકલ ગેજ (આઇડલ)','2.6 bar'],['ઓઇલ લેવલ','બરાબર'],['સ્વીચ કન્ટિન્યુટી (ચાલુ એન્જિન)','0 Ω']],a:'ops',o:['ops','wif','ect','knk']},
+{c:'સ્પીડોમીટર 0 પર, ક્રૂઝ કંટ્રોલ બંધ. એન્જિન બરાબર ચાલે છે.',dtc:'P0500',d:[['વાહનની ઝડપ (સ્કેન)','0 km/h'],['એન્જિન RPM','2200'],['ગિયર','4']],a:'vss',o:['vss','ckp','app','cmp']},
+{c:'BS-VI ટ્રક: MIL ચાલુ, એડબ્લૂ વપરાશ અસામાન્ય, પાવર મર્યાદિત.',dtc:'P2200',d:[['NOx (SCR પહેલાં)','1100 ppm'],['NOx (SCR પછી)','3012 (અમાન્ય)'],['સેન્સર સપ્લાય','12.3 V']],a:'nox',o:['nox','o2','egt','dpf']},
+{c:'DPF રીજનરેશન શરૂ જ નથી થતું. ફિલ્ટર ભરાતું જાય છે.',dtc:'P2032',d:[['EGT (DPF પહેલાં, ગરમ એન્જિન)','-40°C'],['DPF ΔP','28 kPa'],['કૂલન્ટ','88°C']],a:'egt',o:['egt','ect','dpf','iat']}
+];
+const QUIZ=[
+['NTC થર્મિસ્ટરનું તાપમાન વધે તો રેઝિસ્ટન્સ?','ઘટે','વધે','એ જ રહે'],
+['ઇન્ડક્ટિવ CKP સેન્સરનું સિગ્નલ કેવું હોય?','AC સાઇન તરંગ, ઝડપ સાથે વધે','0/5 V ચોરસ પલ્સ','સ્થિર DC'],
+['હોલ સેન્સરને કેટલા વાયર સામાન્ય રીતે હોય?','3 (સપ્લાય, સિગ્નલ, ગ્રાઉન્ડ)','2','1'],
+['60-2 વ્હીલમાં ખૂટતા દાંત શું બતાવે?','સંદર્ભ સ્થિતિ (નંબર 1 સિલિન્ડર)','RPM મર્યાદા','ઓઇલ પ્રેશર'],
+['રેલ પ્રેશર સેન્સર કયા સિદ્ધાંત પર?','પીઝો-રેઝિસ્ટિવ (સ્ટ્રેન ગેજ)','થર્મોકપલ','હોલ ઇફેક્ટ'],
+['3-વાયર સેન્સરનો રેફરન્સ વોલ્ટેજ સામાન્ય રીતે?','5 V','12 V','24 V'],
+['APP માં બે ટ્રેક શા માટે?','સલામતી: બંનેનો મેળ ચકાસવા','વધુ પાવર માટે','ઇંધણ બચાવવા'],
+['હોટ ફિલ્મ MAF માં હવા વધે તો?','ફિલ્મ ઠંડી પડે, કરંટ અને સિગ્નલ વધે','સિગ્નલ ઘટે','કોઈ ફેરફાર નહીં'],
+['લેમ્ડા સેન્સર 0.9 V બતાવે એટલે?','મિશ્રણ રિચ','મિશ્રણ લીન','સેન્સર ઠંડો'],
+['નોક સેન્સર કયા સિદ્ધાંત પર?','પીઝોઇલેક્ટ્રિક','NTC','પોટેન્શિયોમીટર'],
+['ઓઇલ પ્રેશર સ્વીચ એન્જિન બંધ હોય ત્યારે?','બંધ (લાઇટ ચાલુ)','ખુલ્લી (લાઇટ બંધ)','અડધી ખુલ્લી'],
+['સેન્સર સિગ્નલ 5 V પર અટકે તો મોટા ભાગે?','સિગ્નલ ઓપન કે ગ્રાઉન્ડ તૂટ્યો','સેન્સર એકદમ ઠીક','બેટરી ફુલ']
+];
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const fx=(x,d=2)=>Number(x).toFixed(d);
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const fR=r=>r<1000?Math.round(r)+' Ω':(r/1000).toFixed(r<10000?2:1)+' kΩ';
+function setFb(el,ok,msg){el.className='fb '+(ok?'ok':'no');el.textContent=msg}
+function on(el,sel,fn){el.querySelectorAll(sel).forEach(b=>b.addEventListener('click',()=>fn(b)))}
+const SVG=(w,h,inner,lbl='એનિમેશન')=>`<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="${lbl}">${inner}</svg>`;
+const alive=el=>el.isConnected;
+const T='#7CF2C8',W='#DDE7EA',DIM='#5E8E8A',Y='#E3A600',R='#E0524A',B='#8C6A47';
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const slider=(id,l,min,max,v,st,u)=>`<label class="sl" for="${id}">${l}: <b id="${id}v">${v}</b> ${u}</label><input type="range" id="${id}" min="${min}" max="${max}" step="${st}" value="${v}">`;
+const lcd=(id,l,u='')=>`<div class="lcd"><small>${l}</small><span id="${id}">—</span> ${u}</div>`;
+const set=(el,id,v)=>{const x=el.querySelector('#'+id);if(x)x.textContent=v};
+function scope(pts,vmin,vmax,opt={}){const w=320,h=130,pd=8;let g='';for(let i=1;i<10;i++)g+=`<line x1="${i*32}" y1="0" x2="${i*32}" y2="${h}" stroke="#1F4A4C"/>`;for(let i=1;i<5;i++)g+=`<line x1="0" y1="${i*26}" x2="${w}" y2="${i*26}" stroke="#1F4A4C"/>`;
+ const y=v=>h-pd-(v-vmin)/(vmax-vmin)*(h-2*pd);const d=pts.map((v,i)=>(i?'L':'M')+(i/(pts.length-1)*w).toFixed(1)+' '+y(v).toFixed(1)).join('');
+ return SVG(w,h,`<rect width="${w}" height="${h}" fill="#0E2A2C"/>${g}${opt.zero?`<line x1="0" y1="${y(0)}" x2="${w}" y2="${y(0)}" stroke="${DIM}" stroke-dasharray="3 3"/>`:''}<path d="${d}" fill="none" stroke="${T}" stroke-width="2"/>${opt.mk!=null?`<line x1="${opt.mk*w}" y1="0" x2="${opt.mk*w}" y2="${h}" stroke="${Y}" stroke-width="1.5"/>`:''}<text x="6" y="14" fill="${DIM}" font-size="11">${opt.l||'ઓસિલોસ્કોપ'}</text><text x="${w-6}" y="14" fill="${DIM}" font-size="11" text-anchor="end">${opt.r||''}</text>`,'ઓસિલોસ્કોપ તરંગ')}
+function curve(fn,xmin,xmax,x,vmax,xl,yl){const w=320,h=120,p=26;const X=v=>p+(v-xmin)/(xmax-xmin)*(w-p-8),Yv=v=>h-18-(v/vmax)*(h-30);let d='';for(let i=0;i<=60;i++){const v=xmin+(xmax-xmin)*i/60;d+=(i?'L':'M')+X(v).toFixed(1)+' '+Yv(fn(v)).toFixed(1)}
+ return SVG(w,h,`<rect width="${w}" height="${h}" fill="#0E2A2C"/><line x1="${p}" y1="${h-18}" x2="${w-6}" y2="${h-18}" stroke="${DIM}"/><line x1="${p}" y1="8" x2="${p}" y2="${h-18}" stroke="${DIM}"/><path d="${d}" fill="none" stroke="${DIM}" stroke-width="2"/><circle cx="${X(x)}" cy="${Yv(fn(x))}" r="6" fill="${Y}"/><text x="${w-6}" y="${h-4}" fill="${DIM}" font-size="10" text-anchor="end">${xl}</text><text x="${p+4}" y="16" fill="${DIM}" font-size="10">${yl}</text>`,'ગ્રાફ')}
+function cover(min,max,done){let lo=1e9,hi=-1e9,f=false;return v=>{lo=Math.min(lo,v);hi=Math.max(hi,v);if(!f&&hi-lo>=0.6*(max-min)){f=true;done()}}}
+function loop(el,fn){let t0=performance.now(),last=t0;const st=now=>{if(!alive(el))return;fn((now-t0)/1000,(now-last)/1000);last=now;requestAnimationFrame(st)};requestAnimationFrame(st)}
+
+const SIM={};
+/* NTC thermistor */
+SIM.ntc=(el,s,done)=>{const c=s.sim;let t=c.t0;const cv=cover(c.tmin,c.tmax,done);
+ el.innerHTML=`<div class="stage" id="st"></div><div class="readout">${lcd('rt','તાપમાન','°C')}${lcd('rr','સેન્સર રેઝિસ્ટન્સ')}${lcd('rv','સિગ્નલ','V')}</div>${slider('sl',c.med+' તાપમાન',c.tmin,c.tmax,t,1,'°C')}<div class="stage" id="gr"></div><p class="muted">ગ્રાફ: તાપમાન વધે તેમ સિગ્નલ વોલ્ટેજ ઘટે. ECU અંદર 2.49 kΩ પુલ-અપ રેઝિસ્ટર માની ગણતરી.</p>`;
+ let ph=0;const draw=()=>{const r=NTC_R(t),v=NTC_V(t),i=5/(r+2490)*1000,hot=clamp((t-c.tmin)/(c.tmax-c.tmin),0,1);
+  const bead=`rgb(${Math.round(70+185*hot)},${Math.round(150-90*hot)},${Math.round(230-200*hot)})`;let dots='';const n=6,sp=(ph*Math.min(1,i/1.5))%1;
+  for(let k=0;k<n;k++){const q=(k/n+sp)%1;dots+=`<circle cx="${180+q*0}" cy="0" r="0"/>`;const px=q<0.5?150+q*2*110:260;const py=q<0.5?40:40+(q-0.5)*2*75;dots+=`<circle cx="${px}" cy="${py}" r="3" fill="${Y}"/>`}
+  el.querySelector('#st').innerHTML=SVG(320,170,`<rect x="12" y="34" width="120" height="122" rx="8" fill="${c.c}" opacity="${0.35+hot*0.3}"/><rect x="12" y="34" width="120" height="122" rx="8" fill="#FF5A3C" opacity="${hot*0.35}"/><text x="72" y="150" fill="${W}" font-size="11" text-anchor="middle">${c.med}</text>
+  <rect x="66" y="10" width="12" height="70" fill="#9AA5AA"/><circle cx="72" cy="88" r="11" fill="${bead}" stroke="${W}" stroke-width="1.5"/><text x="92" y="92" fill="${W}" font-size="10">NTC</text>
+  <path d="M78 22 H150 V40" stroke="${Y}" stroke-width="3" fill="none"/><path d="M66 22 H40 V8 H300 V140 H260" stroke="${B}" stroke-width="3" fill="none"/>
+  <rect x="210" y="26" width="98" height="98" rx="8" fill="#1D4E89"/><text x="259" y="44" fill="#fff" font-size="12" text-anchor="middle">ECU</text><text x="259" y="62" fill="#FFB4AE" font-size="11" text-anchor="middle">5 V</text>
+  <path d="M259 66 l-6 4 l12 6 l-12 6 l12 6 l-6 4" stroke="${W}" fill="none" stroke-width="1.5"/><text x="296" y="84" fill="${W}" font-size="9" text-anchor="end">2.49k</text>
+  <path d="M150 40 H259 V66" stroke="${Y}" stroke-width="3" fill="none"/><circle cx="259" cy="104" r="12" fill="#0E2A2C" stroke="${T}"/><text x="259" y="108" fill="${T}" font-size="9" text-anchor="middle">${fx(v,1)}V</text>${dots}`,'NTC સેન્સર સર્કિટ');
+  set(el,'rt',t);set(el,'rr',fR(r));set(el,'rv',fx(v));el.querySelector('#gr').innerHTML=curve(NTC_V,c.tmin,c.tmax,t,5,'તાપમાન °C →','સિગ્નલ V')};
+ el.querySelector('#sl').oninput=e=>{t=+e.target.value;set(el,'slv',t);cv(t);draw()};
+ loop(el,(tt,dt)=>{if(!RM){ph+=dt*0.6;draw()}});draw()};
+
+/* Potentiometer */
+SIM.pot=(el,s,done)=>{const c=s.sim;let x=0;const cv=cover(0,100,done);
+ el.innerHTML=`<div class="stage" id="st"></div><div class="readout">${lcd('rp','સ્થિતિ','%')}${lcd('r1',c.dual?'ટ્રેક 1':'સિગ્નલ','V')}${c.dual?lcd('r2','ટ્રેક 2','V'):''}</div>${slider('sl',c.kind=='pedal'?'પેડલ દબાવો':'વાલ્વ ખોલો',0,100,0,1,'%')}<p class="muted">${c.dual?'ટ્રેક 2 હંમેશા ટ્રેક 1 નો અડધો. ECU બંને સરખાવે.':'ECU ઇચ્છિત અને વાસ્તવિક ખૂલણ સરખાવે.'}</p>`;
+ const draw=()=>{const v1=s.sig(x),v2=v1/2,a=x/100;let mech;
+  if(c.kind=='pedal'){const ang=-15-a*30,rad=ang*Math.PI/180;const ex=40+90*Math.cos(rad),ey=40-90*Math.sin(rad);mech=`<circle cx="40" cy="40" r="7" fill="${W}"/><line x1="40" y1="40" x2="${ex}" y2="${ey}" stroke="${W}" stroke-width="6" stroke-linecap="round"/><rect x="${ex-14}" y="${ey-6}" width="28" height="12" rx="3" fill="#9AA5AA" transform="rotate(${-ang} ${ex} ${ey})"/><text x="40" y="160" fill="${DIM}" font-size="11">પેડલ</text>`}
+  else{const ang=a*85;mech=`<rect x="10" y="50" width="110" height="60" fill="none" stroke="${W}" stroke-width="2"/><g transform="rotate(${-ang} 65 80)"><rect x="63" y="52" width="4" height="56" fill="${Y}"/></g><circle cx="65" cy="80" r="4" fill="${W}"/><text x="65" y="130" fill="${DIM}" font-size="11" text-anchor="middle">વાલ્વ / ફ્લેપ</text>`}
+  const tr=(yy,v,lbl)=>{const wx=170+a*120;return `<rect x="170" y="${yy}" width="120" height="12" rx="3" fill="#3A2F2A"/><rect x="170" y="${yy}" width="120" height="12" rx="3" fill="url(#gg)" opacity=".8"/><text x="168" y="${yy-4}" fill="#FFB4AE" font-size="10">5V</text><text x="292" y="${yy-4}" fill="#D6B48F" font-size="10" text-anchor="end">GND</text><path d="M${wx} ${yy-12} l-6 -10 h12 z" fill="${Y}"/><line x1="${wx}" y1="${yy-22}" x2="${wx}" y2="${yy-30}" stroke="${Y}" stroke-width="2"/><text x="${wx}" y="${yy-34}" fill="${Y}" font-size="11" text-anchor="middle">${fx(v,2)} V</text><text x="230" y="${yy+26}" fill="${DIM}" font-size="10" text-anchor="middle">${lbl}</text>`};
+  el.querySelector('#st').innerHTML=SVG(320,170,`<defs><linearGradient id="gg"><stop offset="0" stop-color="${R}"/><stop offset="1" stop-color="${B}"/></linearGradient></defs>${mech}${tr(c.dual?62:90,v1,c.dual?'ટ્રેક 1':'રેઝિસ્ટિવ ટ્રેક')}${c.dual?tr(132,v2,'ટ્રેક 2 (અડધો)'):''}`,'પોટેન્શિયોમીટર');
+  set(el,'rp',x);set(el,'r1',fx(v1));set(el,'r2',fx(v2))};
+ el.querySelector('#sl').oninput=e=>{x=+e.target.value;set(el,'slv',x);cv(x);draw()};draw()};
+
+/* Inductive CKP */
+SIM.induct=(el,s,done)=>{let rpm=800,phi=0,seen=new Set();
+ el.innerHTML=`<div class="stage" id="st"></div><div class="stage" id="sc"></div><div class="readout">${lcd('rr','RPM')}${lcd('rv','પીક વોલ્ટેજ','V AC')}${lcd('rf','ફ્રિક્વન્સી','Hz')}</div>${slider('sl','એન્જિન RPM',0,4000,rpm,50,'')}<p class="muted">વ્હીલ સમજવા માટે ધીમી ગતિમાં ફરે છે. સ્કોપમાં એક આંટો: ખૂટતા દાંત પાસે સપાટ ભાગ દેખાશે.</p>`;
+ const A=()=>rpm<=0?0:0.2+rpm*0.012;
+ const wave=()=>{const a=A(),pts=[];for(let i=0;i<=720;i++){const ang=i/2,k=Math.floor(ang/6);pts.push(k>=58?0:a*Math.sin(2*Math.PI*ang/6))}return pts};
+ let cached=null,ca=-1;
+ const draw=()=>{let teeth='',best=99;for(let k=0;k<60;k++){if(k>=58)continue;const ang=(phi+k*6)%360,rad=ang*Math.PI/180,x1=95+62*Math.cos(rad),y1=88+62*Math.sin(rad),x2=95+74*Math.cos(rad),y2=88+74*Math.sin(rad);teeth+=`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#9AA5AA" stroke-width="4.5"/>`;const d=Math.min(ang,360-ang);best=Math.min(best,d)}
+  const fl=clamp(1-best/3,0.15,1)*(rpm>0?1:0.5);
+  el.querySelector('#st').innerHTML=SVG(320,176,`<circle cx="95" cy="88" r="62" fill="#2A3A40" stroke="#9AA5AA" stroke-width="2"/><circle cx="95" cy="88" r="10" fill="${W}"/>${teeth}<text x="95" y="170" fill="${DIM}" font-size="11" text-anchor="middle">60-2 રિલક્ટર વ્હીલ</text>
+  <path d="M176 70 C200 60,200 116,176 106" stroke="${T}" stroke-width="2" fill="none" opacity="${fl}"/><path d="M176 78 C190 72,190 104,176 98" stroke="${T}" stroke-width="2" fill="none" opacity="${fl}"/>
+  <rect x="176" y="72" width="70" height="32" rx="4" fill="#4A5560"/><rect x="200" y="76" width="40" height="24" fill="${R}"/><text x="210" y="92" fill="#fff" font-size="10">N</text><text x="226" y="92" fill="#fff" font-size="10">S</text>
+  ${[0,1,2,3,4,5].map(i=>`<line x1="${181+i*3.5}" y1="70" x2="${181+i*3.5}" y2="106" stroke="${Y}" stroke-width="1.5"/>`).join('')}<path d="M246 80 H300 M246 96 H300" stroke-width="3" stroke="${Y}"/><path d="M246 96 H300" stroke="${B}" stroke-width="3"/><text x="211" y="124" fill="${W}" font-size="11" text-anchor="middle">ચુંબક + કોઇલ</text><text x="300" y="72" fill="${DIM}" font-size="10" text-anchor="end">ECU તરફ</text>`,'રિલક્ટર વ્હીલ અને સેન્સર');
+  const a=A();if(ca!==a){cached=wave();ca=a}const mk=((360-phi)%360)/360;
+  el.querySelector('#sc').innerHTML=scope(cached,-Math.max(2,a*1.2),Math.max(2,a*1.2),{zero:1,mk,l:'1 આંટો (360°)',r:`±${fx(a,1)} V`});
+  set(el,'rr',rpm);set(el,'rv',fx(a,1));set(el,'rf',rpm)};
+ el.querySelector('#sl').oninput=e=>{rpm=+e.target.value;set(el,'slv',rpm);seen.add(rpm<300?'l':rpm>2500?'h':'m');if(seen.has('l')&&seen.has('h'))done();draw()};
+ loop(el,(t,dt)=>{if(rpm>0&&!RM){phi=(phi+dt*360*(0.06+rpm/4000*0.35))%360}draw()});draw()};
+
+/* Hall */
+SIM.hall=(el,s,done)=>{const vss=s.sim.mode=='vss';let x=vss?40:800,phi=0,seen=new Set();
+ el.innerHTML=`<div class="stage" id="st"></div><div class="stage" id="sc"></div><div class="readout">${lcd('ro','આઉટપુટ','V')}${lcd('rx',vss?'ઝડપ':'એન્જિન RPM',vss?'km/h':'')}${lcd('rf','ફ્રિક્વન્સી','Hz')}</div>${vss?slider('sl','વાહનની ઝડપ',0,120,x,1,'km/h'):slider('sl','એન્જિન RPM',0,4000,x,50,'')}<p class="muted">${vss?'ઝડપ વધે એટલે પલ્સ નજીક-નજીક આવે, ઊંચાઈ એ જ 5 V.':'કેમ, ક્રેન્કથી અડધી ઝડપે ફરે. 720° ક્રેન્કમાં માત્ર એક પલ્સ.'}</p>`;
+ const N=vss?8:1,width=vss?22.5:40;
+ const outAt=ang=>{for(let k=0;k<N;k++){const c=(k*360/N);let d=((ang-c)%360+360)%360;if(d<width)return 5}return 0};
+ const draw=()=>{let tabs='';for(let k=0;k<N;k++){const a0=(phi+k*360/N)*Math.PI/180,a1=(phi+k*360/N+width)*Math.PI/180;tabs+=`<path d="M${100+60*Math.cos(a0)} ${88+60*Math.sin(a0)} A60 60 0 0 1 ${100+60*Math.cos(a1)} ${88+60*Math.sin(a1)} L${100+76*Math.cos(a1)} ${88+76*Math.sin(a1)} A76 76 0 0 0 ${100+76*Math.cos(a0)} ${88+76*Math.sin(a0)} Z" fill="${vss?R:'#9AA5AA'}"/>`}
+  const rel=((360-phi)%360+360)%360,o=outAt(rel);
+  el.querySelector('#st').innerHTML=SVG(320,176,`<circle cx="100" cy="88" r="60" fill="#2A3A40" stroke="#9AA5AA" stroke-width="2"/><circle cx="100" cy="88" r="10" fill="${W}"/>${tabs}<text x="100" y="172" fill="${DIM}" font-size="11" text-anchor="middle">${vss?'ચુંબકવાળું રિંગ':'કેમ ટ્રિગર વ્હીલ'}</text>
+  <rect x="182" y="70" width="64" height="36" rx="5" fill="#4A5560"/><rect x="186" y="78" width="16" height="20" fill="${o?Y:'#2A3A40'}" stroke="${Y}"/><text x="194" y="118" fill="${W}" font-size="10" text-anchor="middle">હોલ ચિપ</text>
+  ${o?`<path d="M178 88 H186" stroke="${T}" stroke-width="3"/><circle cx="194" cy="88" r="14" fill="none" stroke="${T}" opacity=".5"/>`:''}
+  <path d="M246 78 H300" stroke="${R}" stroke-width="3"/><path d="M246 88 H300" stroke="${Y}" stroke-width="3"/><path d="M246 98 H300" stroke="${B}" stroke-width="3"/><text x="304" y="91" fill="${o?Y:DIM}" font-size="12">${o}V</text><text x="214" y="64" fill="${DIM}" font-size="10" text-anchor="middle">${s.ref} સપ્લાય</text>`,'હોલ સેન્સર');
+  const pts=[];const span=vss?360:720;for(let i=0;i<=400;i++){const a=i/400*span;pts.push(vss?outAt(a):outAt(a/2))}
+  const mk=vss?rel/360:((rel*2)%720)/720;
+  el.querySelector('#sc').innerHTML=scope(pts,-0.5,6,{mk,l:vss?'શાફ્ટનો 1 આંટો':'ક્રેન્ક 720°',r:'0–5 V'});
+  const f=vss?x*1.1:x/120;set(el,'ro',o);set(el,'rx',x);set(el,'rf',fx(f,1))};
+ el.querySelector('#sl').oninput=e=>{x=+e.target.value;set(el,'slv',x);seen.add(x<(vss?15:300)?'l':x>(vss?80:2500)?'h':'m');if(seen.has('l')&&seen.has('h'))done();draw()};
+ loop(el,(t,dt)=>{if(x>0&&!RM)phi=(phi+dt*360*(vss?0.03+x/120*0.25:0.05+x/4000*0.3))%360;draw()});draw()};
+
+/* Pressure (piezo-resistive) */
+SIM.press=(el,s,done)=>{const c=s.sim;let p=c.p0;const cv=cover(c.pmin,c.pmax,done);let ph=0;
+ el.innerHTML=`<div class="stage" id="st"></div><div class="readout">${lcd('rp','દબાણ',c.unit)}${lcd('rv','સિગ્નલ','V')}${lcd('rs','ડાયાફ્રામ','')}</div>${slider('sl',c.med+' દબાણ',c.pmin,c.pmax,p,c.pmax>500?10:1,c.unit)}<div class="stage" id="gr"></div><p class="muted">${c.marks.map(m=>`${m[1]}: ${m[0]} ${c.unit}`).join('  |  ')}</p>`;
+ const draw=()=>{const k=(p-c.pmin)/(c.pmax-c.pmin),d=k*22,v=s.sig(p);let dots='';const n=4+Math.round(k*26);for(let i=0;i<n;i++){const xx=40+((i*53+ph*40*(1+k))%230),yy=128+((i*37)%30);dots+=`<circle cx="${xx}" cy="${yy}" r="2.5" fill="${c.c}"/>`}
+  const g=(x,t)=>`<rect x="${x}" y="${96-d*0.55-(t?2:0)}" width="16" height="5" fill="${t?R:'#5B9BE6'}" opacity="${0.35+k*0.65}"/>`;
+  el.querySelector('#st').innerHTML=SVG(320,176,`<rect x="30" y="118" width="250" height="48" fill="none" stroke="${W}" stroke-width="2"/><text x="40" y="112" fill="${DIM}" font-size="10">${c.med} (${c.unit})</text>${dots}
+  <rect x="110" y="40" width="90" height="60" fill="#2A3A40" stroke="${W}"/><text x="155" y="58" fill="${DIM}" font-size="10" text-anchor="middle">${s.id=='dpf'?'પાછળનું દબાણ':'વેક્યુમ રેફ'}</text>
+  <path d="M110 100 Q155 ${100-d*2} 200 100" stroke="${Y}" stroke-width="3" fill="none"/>${g(120,0)}${g(140,1)}${g(156,1)}${g(176,0)}
+  <path d="M150 100 V118 M160 100 V118" stroke="${W}" stroke-width="2"/>
+  <rect x="222" y="40" width="70" height="40" rx="5" fill="#1D4E89"/><text x="257" y="58" fill="#fff" font-size="10" text-anchor="middle">એમ્પ્લિફાયર</text><text x="257" y="72" fill="#fff" font-size="10" text-anchor="middle">ચિપ</text>
+  <path d="M200 60 H222" stroke="${W}"/><path d="M292 60 H312" stroke="${Y}" stroke-width="3"/><text x="310" y="52" fill="${Y}" font-size="11" text-anchor="end">${fx(v)} V</text><text x="155" y="30" fill="${W}" font-size="11" text-anchor="middle">સિલિકોન ડાયાફ્રામ + સ્ટ્રેન ગેજ</text>`,'પ્રેશર સેન્સર');
+  set(el,'rp',p);set(el,'rv',fx(v));set(el,'rs',k<0.05?'સપાટ':k<0.5?'થોડો વળ્યો':'વધુ વળ્યો');
+  el.querySelector('#gr').innerHTML=curve(s.sig,c.pmin,c.pmax,p,5,'દબાણ →','સિગ્નલ V')};
+ el.querySelector('#sl').oninput=e=>{p=+e.target.value;set(el,'slv',p);cv(p);draw()};
+ loop(el,(t,dt)=>{if(!RM){ph+=dt;draw()}});draw()};
+
+/* MAF hot film */
+SIM.maf=(el,s,done)=>{let f=20,ph=0;const cv=cover(0,600,done);
+ el.innerHTML=`<div class="stage" id="st"></div><div class="readout">${lcd('rf','હવા','kg/h')}${lcd('ri','હીટર કરંટ','mA')}${lcd('rv','સિગ્નલ','V')}</div>${slider('sl','હવાનો પ્રવાહ (લોડ)',0,600,f,5,'kg/h')}<div class="stage" id="gr"></div><p class="muted">ફિલ્મનું તાપમાન સ્થિર રાખવા જે કરંટ જોઈએ, તે જ માપ છે.</p>`;
+ const draw=()=>{const k=f/600,v=s.sig(f),cur=60+Math.sqrt(k)*240;let parts='';const n=8+Math.round(k*24);for(let i=0;i<n;i++){const xx=(i*41+ph*(30+k*400))%300+10,yy=52+(i*29)%70;parts+=`<line x1="${xx}" y1="${yy}" x2="${xx+6+k*14}" y2="${yy}" stroke="${W}" stroke-width="2" opacity=".7"/>`}
+  el.querySelector('#st').innerHTML=SVG(320,176,`<rect x="6" y="44" width="308" height="86" fill="#1F3236" stroke="${W}" stroke-width="2"/>${parts}<text x="16" y="38" fill="${DIM}" font-size="10">હવા →</text>
+  <rect x="146" y="70" width="28" height="34" rx="3" fill="#FF6A3C" opacity="${0.55+0.45*(1-k*0.4)}"/><text x="160" y="146" fill="${W}" font-size="11" text-anchor="middle">હોટ ફિલ્મ (હવા + 100°C)</text>
+  <rect x="200" y="140" width="${cur/300*100}" height="10" fill="${Y}"/><text x="200" y="168" fill="${DIM}" font-size="10">હીટર કરંટ</text><path d="M160 70 V20 H300" stroke="${Y}" stroke-width="3" fill="none"/><text x="298" y="14" fill="${Y}" font-size="11" text-anchor="end">${fx(v)} V</text>`,'હોટ ફિલ્મ MAF');
+  set(el,'rf',f);set(el,'ri',Math.round(cur));set(el,'rv',fx(v));el.querySelector('#gr').innerHTML=curve(s.sig,0,600,f,5,'kg/h →','સિગ્નલ V')};
+ el.querySelector('#sl').oninput=e=>{f=+e.target.value;set(el,'slv',f);cv(f);draw()};
+ loop(el,(t,dt)=>{if(!RM){ph+=dt;draw()}});draw()};
+
+/* Knock piezo */
+SIM.knock=(el,s,done)=>{let kn=false,ph=0,hist=[];
+ el.innerHTML=`<div class="stage" id="st"></div><div class="stage" id="sc"></div><div class="readout">${lcd('rk','પીક સિગ્નલ','mV')}${lcd('ra','ECU પગલું')}</div><button class="btn p" id="kb">નોકિંગ શરૂ કરો</button><p class="muted">દરેક દહન વખતે એક નાનું કંપન આવે. નોકિંગમાં ઝડપી, મોટા ઝટકા.</p>`;
+ el.querySelector('#kb').onclick=e=>{kn=!kn;e.target.textContent=kn?'નોકિંગ બંધ કરો':'નોકિંગ શરૂ કરો';e.target.classList.toggle('on',kn);if(kn)done()};
+ const sig=t=>{const per=0.25,tt=t%per;const amp=kn?0.25:0.02;const f=kn?60:25;return tt<0.12?amp*Math.exp(-tt*28)*Math.sin(2*Math.PI*f*tt):(Math.random()-.5)*0.004};
+ const draw=t=>{const pts=[];for(let i=0;i<=300;i++)pts.push(sig(t+i/300*1));const pk=kn?250:20,sq=Math.abs(sig(t))/0.25*6;
+  el.querySelector('#st').innerHTML=SVG(320,140,`<rect x="40" y="110" width="240" height="18" fill="#4A5560"/><text x="160" y="138" fill="${DIM}" font-size="10" text-anchor="middle">સિલિન્ડર બ્લોક</text>
+  <rect x="130" y="${84+sq}" width="60" height="${26-sq}" fill="#C9B47A"/><text x="160" y="${101+sq/2}" fill="#2a2010" font-size="10" text-anchor="middle">ક્રિસ્ટલ</text><rect x="125" y="${58+sq}" width="70" height="26" fill="#9AA5AA"/><text x="160" y="${75+sq}" fill="#222" font-size="10" text-anchor="middle">વજન (માસ)</text>
+  ${sq>1.5?`<text x="118" y="104" fill="${R}" font-size="16">+</text><text x="196" y="104" fill="#5B9BE6" font-size="16">−</text>`:''}<path d="M190 96 H300" stroke="${Y}" stroke-width="3"/><text x="300" y="88" fill="${Y}" font-size="11" text-anchor="end">${kn?'મોટો ઝટકો':'નાનું સિગ્નલ'}</text>`,'નોક સેન્સર');
+  el.querySelector('#sc').innerHTML=scope(pts,-0.3,0.3,{zero:1,l:'સમય →',r:'±300 mV'});set(el,'rk',pk);set(el,'ra',kn?'ટાઇમિંગ મોડું':'સામાન્ય')};
+ loop(el,(t)=>draw(RM?0:t*0.6));draw(0)};
+
+/* O2 zirconia */
+SIM.o2=(el,s,done)=>{let lam=1.0,hot=true,cl=false,hist=Array(160).fill(0.45),acc=0,sr=false,sl=false;
+ el.innerHTML=`<div class="stage" id="st"></div><div class="stage" id="sc"></div><div class="readout">${lcd('rl','લેમ્ડા λ')}${lcd('rv','સિગ્નલ','V')}${lcd('rm','મિશ્રણ')}</div>${slider('sl','મિશ્રણ (λ)',0.80,1.20,1.00,0.01,'')}
+ <div class="flex"><button class="btn on" id="bh">હીટર: ચાલુ</button><button class="btn" id="bc">ECU ક્લોઝ્ડ લૂપ: બંધ</button></div><p class="muted">λ = 1 એટલે આદર્શ મિશ્રણ (14.7:1 પેટ્રોલ). λ < 1 રિચ, λ > 1 લીન.</p>`;
+ const V=l=>hot?0.1+0.8/(1+Math.exp((l-1)*90)):0.45;
+ el.querySelector('#sl').oninput=e=>{lam=+e.target.value;set(el,'slv',fx(lam));if(lam<0.97)sr=true;if(lam>1.03)sl=true;if(sr&&sl)done()};
+ el.querySelector('#bh').onclick=e=>{hot=!hot;e.target.textContent='હીટર: '+(hot?'ચાલુ':'બંધ');e.target.classList.toggle('on',hot)};
+ el.querySelector('#bc').onclick=e=>{cl=!cl;e.target.textContent='ECU ક્લોઝ્ડ લૂપ: '+(cl?'ચાલુ':'બંધ');e.target.classList.toggle('on',cl)};
+ const draw=t=>{const l=cl?1+0.035*Math.sin(t*4):lam,v=V(l);acc+=1;hist.push(v);hist.shift();
+  const nO=Math.round(clamp((l-0.78)*60,1,26));let ex='',air='',ion='';for(let i=0;i<nO;i++)ex+=`<circle cx="${20+(i*23+t*30)%90}" cy="${40+(i*31)%100}" r="3" fill="#7EC8F0"/>`;for(let i=0;i<26;i++)air+=`<circle cx="${210+(i*19+t*20)%95}" cy="${40+(i*37)%100}" r="3" fill="#7EC8F0"/>`;
+  if(hot){const ni=Math.round(v*8);for(let i=0;i<ni;i++){const q=((t*0.8+i/ni)%1);ion+=`<circle cx="${200-q*80}" cy="${50+i*11}" r="3.5" fill="${Y}"/>`}}
+  el.querySelector('#st').innerHTML=SVG(320,176,`<rect x="10" y="30" width="110" height="120" fill="#3A3A3A" opacity=".6"/><text x="65" y="22" fill="${W}" font-size="11" text-anchor="middle">એક્ઝોસ્ટ</text>${ex}
+  <rect x="120" y="30" width="80" height="120" fill="${hot?'#E8B04A':'#C9C2B0'}" opacity=".85"/><text x="160" y="164" fill="${W}" font-size="10" text-anchor="middle">ઝિર્કોનિયા ${hot?'(ગરમ)':'(ઠંડો)'}</text>
+  <rect x="118" y="30" width="4" height="120" fill="#ddd"/><rect x="198" y="30" width="4" height="120" fill="#ddd"/><rect x="200" y="30" width="110" height="120" fill="#20404A" opacity=".6"/><text x="255" y="22" fill="${W}" font-size="11" text-anchor="middle">બહારની હવા</text>${air}${ion}`,'ઓક્સિજન સેન્સર');
+  el.querySelector('#sc').innerHTML=scope(hist,0,1,{l:'સિગ્નલ ઇતિહાસ',r:'0–1 V'});set(el,'rl',fx(l));set(el,'rv',fx(v));set(el,'rm',!hot?'સેન્સર ઠંડો':v>0.55?'રિચ':v<0.35?'લીન':'λ ≈ 1')};
+ loop(el,t=>draw(RM?0:t));draw(0)};
+
+/* Thermocouple */
+SIM.tc=(el,s,done)=>{let t=200,ph=0;const cv=cover(0,900,done);
+ el.innerHTML=`<div class="stage" id="st"></div><div class="readout">${lcd('rt','ગેસ તાપમાન','°C')}${lcd('rv','થર્મોકપલ','mV')}${lcd('ra','ECU પગલું')}</div>${slider('sl','એક્ઝોસ્ટ તાપમાન',0,900,t,10,'°C')}<div class="stage" id="gr"></div>`;
+ const mv=x=>0.041*x;
+ const draw=()=>{const k=t/900;let e='';const n=6;for(let i=0;i<n;i++){const q=(i/n+ph*(0.1+k))%1;e+=`<circle cx="${100+q*190}" cy="72" r="3" fill="${Y}"/><circle cx="${290-q*190}" cy="96" r="3" fill="#D6B48F"/>`}
+  el.querySelector('#st').innerHTML=SVG(320,160,`<rect x="10" y="40" width="80" height="90" fill="#FF5A3C" opacity="${0.15+k*0.6}"/><text x="50" y="146" fill="${W}" font-size="10" text-anchor="middle">એક્ઝોસ્ટ પાઇપ</text>
+  <circle cx="60" cy="84" r="9" fill="#FFB14A" opacity="${0.3+k*0.7}"/><path d="M60 84 Q80 72 100 72 H290" stroke="${Y}" stroke-width="3" fill="none"/><path d="M60 84 Q80 96 100 96 H290" stroke="${B}" stroke-width="3" fill="none"/>${e}
+  <text x="150" y="64" fill="${Y}" font-size="10">ક્રોમેલ (+)</text><text x="150" y="114" fill="#D6B48F" font-size="10">એલુમેલ (−)</text><rect x="268" y="66" width="44" height="36" rx="5" fill="#0E2A2C" stroke="${T}"/><text x="290" y="88" fill="${T}" font-size="10" text-anchor="middle">${fx(mv(t),1)}mV</text><text x="60" y="30" fill="${W}" font-size="10" text-anchor="middle">ગરમ જંક્શન</text>`,'થર્મોકપલ');
+  set(el,'rt',t);set(el,'rv',fx(mv(t),1));set(el,'ra',t>800?'ટર્બો રક્ષણ':t>=580?'રીજનરેશન તાપમાન':'સામાન્ય');el.querySelector('#gr').innerHTML=curve(x=>mv(x)/8,0,900,t,5,'°C →','mV (પ્રમાણ)')};
+ el.querySelector('#sl').oninput=e=>{t=+e.target.value;set(el,'slv',t);cv(t);draw()};
+ loop(el,(tt,dt)=>{if(!RM){ph+=dt;draw()}});draw()};
+
+/* Oil pressure switch */
+SIM.sw=(el,s,done)=>{let p=0;const cv=cover(0,5,done);
+ el.innerHTML=`<div class="stage" id="st"></div><div class="readout">${lcd('rp','ઓઇલ પ્રેશર','bar')}${lcd('rs','સ્વીચ')}${lcd('rl','ડેશ લાઇટ')}</div>${slider('sl','ઓઇલ પ્રેશર',0,5,p,0.1,'bar')}<p class="muted">સ્વીચ આશરે 0.4 bar પર ખૂલે (ઉદાહરણ).</p>`;
+ const draw=()=>{const open=p>0.4,lift=clamp(p/0.6,0,1)*14;
+  el.querySelector('#st').innerHTML=SVG(320,170,`<rect x="60" y="130" width="140" height="30" fill="#C9A33A" opacity=".6"/><text x="130" y="150" fill="#2a2010" font-size="11" text-anchor="middle">ઓઇલ ગેલેરી (${fx(p,1)} bar)</text>
+  <rect x="90" y="40" width="80" height="90" rx="6" fill="none" stroke="${W}" stroke-width="2"/><path d="M92 ${118-lift} Q130 ${104-lift} 168 ${118-lift}" stroke="${Y}" stroke-width="3" fill="none"/><rect x="126" y="${70-lift}" width="8" height="${46}" fill="${W}"/>
+  <rect x="104" y="${66-lift}" width="52" height="5" fill="#C98A3E"/><rect x="104" y="60" width="52" height="5" fill="#C98A3E" opacity="${open?0.5:1}"/><text x="130" y="34" fill="${W}" font-size="10" text-anchor="middle">કોન્ટેક્ટ ${open?'ખુલ્લો':'બંધ'}</text>
+  <path d="M156 62 H240" stroke="${Y}" stroke-width="3"/><circle cx="262" cy="62" r="20" fill="${open?'#2A3A40':'#E0524A'}" stroke="${W}"/><text x="262" y="67" fill="#fff" font-size="13" text-anchor="middle">🛢</text><text x="262" y="100" fill="${W}" font-size="10" text-anchor="middle">ડેશ લાઇટ</text>`,'ઓઇલ પ્રેશર સ્વીચ');
+  set(el,'rp',fx(p,1));set(el,'rs',open?'ખુલ્લી (OL)':'બંધ (0 Ω)');set(el,'rl',open?'બંધ':'ચાલુ')};
+ el.querySelector('#sl').oninput=e=>{p=+e.target.value;set(el,'slv',fx(p,1));cv(p);draw()};draw()};
+
+/* Water in fuel */
+SIM.wif=(el,s,done)=>{let w=10;const cv=cover(0,100,done);
+ el.innerHTML=`<div class="stage" id="st"></div><div class="readout">${lcd('rw','પાણીનું સ્તર','%')}${lcd('rr','પ્રોબ વચ્ચે')}${lcd('rl','WIF લાઇટ')}</div>${slider('sl','ફિલ્ટરમાં પાણી',0,100,w,1,'%')}`;
+ const draw=()=>{const h=w/100*90,on=w>=35;
+  el.querySelector('#st').innerHTML=SVG(320,170,`<path d="M90 20 H210 V130 Q150 165 90 130 Z" fill="#E8C64A" opacity=".55" stroke="${W}" stroke-width="2"/><path d="M90 ${145-h} H210 V130 Q150 165 90 130 Z" fill="#4AA3DF" opacity=".85"/>
+  <text x="150" y="44" fill="#2a2010" font-size="11" text-anchor="middle">ડીઝલ (હલકું)</text>${w>8?`<text x="150" y="${150-h/2}" fill="#fff" font-size="11" text-anchor="middle">પાણી (ભારે)</text>`:''}
+  <rect x="136" y="${145-0.35*90-4}" width="4" height="40" fill="#ccc"/><rect x="160" y="${145-0.35*90-4}" width="4" height="40" fill="#ccc"/>${on?`<path d="M140 ${145-31} H160" stroke="${Y}" stroke-width="3"/>`:''}
+  <path d="M164 150 V160 H240" stroke="${Y}" stroke-width="3"/><circle cx="262" cy="160" r="0"/><circle cx="262" cy="70" r="20" fill="${on?'#E0A030':'#2A3A40'}" stroke="${W}"/><text x="262" y="75" fill="#fff" font-size="12" text-anchor="middle">💧</text><text x="262" y="104" fill="${W}" font-size="10" text-anchor="middle">WIF લાઇટ</text>`,'વોટર ઇન ફ્યુઅલ');
+  set(el,'rw',w);set(el,'rr',on?'આશરે 2 kΩ':'OL');set(el,'rl',on?'ચાલુ':'બંધ')};
+ el.querySelector('#sl').oninput=e=>{w=+e.target.value;set(el,'slv',w);cv(w);draw()};draw()};
+
+/* NOx + SCR */
+SIM.nox=(el,s,done)=>{let L=40,dz=0,ph=0,a=false,b=false;
+ el.innerHTML=`<div class="stage" id="st"></div><div class="readout">${lcd('ru','NOx (SCR પહેલાં)','ppm')}${lcd('rd','NOx (SCR પછી)','ppm')}${lcd('re','SCR કાર્યક્ષમતા','%')}</div>${slider('sl','એન્જિન લોડ',0,100,L,1,'%')}${slider('sd','એડબ્લૂ ડોઝિંગ',0,150,dz,5,'%')}<p class="fb" id="fw"></p><p class="muted">ECU બંને સેન્સર સરખાવી એડબ્લૂ માત્રા નક્કી કરે.</p>`;
+ const calc=()=>{const up=200+12*L,eff=0.95*Math.min(dz,100)/100,dn=up*(1-eff);return{up,dn,eff,slip:dz>110}};
+ const draw=()=>{const c=calc();let dots='';const nu=Math.round(c.up/80),nd=Math.round(c.dn/80);for(let i=0;i<nu;i++)dots+=`<circle cx="${20+((i*31+ph*40)%90)}" cy="${70+(i*17)%40}" r="3" fill="${R}"/>`;for(let i=0;i<nd;i++)dots+=`<circle cx="${220+((i*29+ph*40)%85)}" cy="${70+(i*19)%40}" r="3" fill="${R}"/>`;
+  let sp='';const ns=Math.round(dz/15);for(let i=0;i<ns;i++)sp+=`<circle cx="${112+((i*7+ph*30)%20)}" cy="${62+(i*9)%40}" r="2" fill="#7EC8F0"/>`;
+  el.querySelector('#st').innerHTML=SVG(320,170,`<rect x="6" y="60" width="308" height="56" fill="#2A3A40" stroke="${W}"/><rect x="140" y="52" width="70" height="72" rx="6" fill="#6E7F86"/><text x="175" y="92" fill="#fff" font-size="12" text-anchor="middle">SCR</text>
+  <rect x="104" y="30" width="10" height="30" fill="#7EC8F0"/><text x="109" y="24" fill="${W}" font-size="10" text-anchor="middle">એડબ્લૂ</text>${sp}${dots}
+  <rect x="64" y="40" width="10" height="20" fill="${Y}"/><text x="69" y="34" fill="${Y}" font-size="10" text-anchor="middle">NOx 1</text><rect x="252" y="40" width="10" height="20" fill="${Y}"/><text x="257" y="34" fill="${Y}" font-size="10" text-anchor="middle">NOx 2</text>
+  <text x="160" y="150" fill="${DIM}" font-size="10" text-anchor="middle">લાલ બિંદુ = NOx</text>`,'NOx અને SCR');
+  set(el,'ru',Math.round(c.up));set(el,'rd',Math.round(c.dn));set(el,'re',Math.round(c.eff*100));const fw=el.querySelector('#fw');if(c.slip)setFb(fw,false,'વધુ ડોઝિંગ: એમોનિયા સ્લિપ! NOx સેન્સર એમોનિયાને પણ NOx માની વાંચે છે.');else{fw.className='fb';fw.textContent=''}};
+ el.querySelector('#sl').oninput=e=>{L=+e.target.value;set(el,'slv',L);draw()};
+ el.querySelector('#sd').oninput=e=>{dz=+e.target.value;set(el,'sdv',dz);if(dz<20)a=true;if(dz>=90&&dz<=110)b=true;if(a&&b)done();draw()};
+ loop(el,(t,dt)=>{if(!RM){ph+=dt;draw()}});draw()};
+
+/* ---------- meter test generator ---------- */
+function METER(s){const f=s.fam;
+ if(f=='ntc'){const T0=s.sim.t0,r=fR(NTC_R(T0)),v=fx(NTC_V(T0))+' V';return{c:`ગરમ એન્જિન (આશરે ${T0}°C)`,sc:{ok:'સેન્સર અને વાયરિંગ ઠીક',open:'સેન્સર અંદરથી ઓપન — સેન્સર બદલો',short:'સિગ્નલ વાયર ગ્રાઉન્ડ સાથે શોર્ટ — વાયરિંગ રિપેર'},
+  t:[['સ્કેન ટૂલ પર તાપમાન',{ok:T0+'°C',open:'-40°C',short:'140°C'}],['કનેક્ટર જોડેલો: સિગ્નલ વોલ્ટેજ',{ok:v,open:'4.98 V',short:'0.00 V'}],['કનેક્ટર કાઢી: સેન્સર રેઝિસ્ટન્સ',{ok:r,open:'OL',short:r}],['કનેક્ટર કાઢી: હાર્નેસ સિગ્નલ પિન',{ok:'5.00 V',open:'5.00 V',short:'0.00 V'}]]}}
+ if(f=='pot'||f=='press'||f=='maf'){const a=fx(s.sig(s.tA[1]))+' V',b=fx(s.sig(s.tB[1]))+' V';return{c:'કી ON / એન્જિન ચાલુ',sc:{ok:'સેન્સર અને વાયરિંગ ઠીક',noref:`${f=='maf'?'સપ્લાય':'5 V રેફરન્સ'} નથી — વાયર કે ECU તપાસો`,bad:'સેન્સર અંદરથી ખરાબ (સિગ્નલ અટકેલું) — સેન્સર બદલો',gnd:'સેન્સર ગ્રાઉન્ડ વાયર તૂટેલો — વાયરિંગ રિપેર'},
+  t:[['કી ON, કનેક્ટર કાઢી: '+(f=='maf'?'સપ્લાય':'રેફ')+' પિન',{ok:s.ref,noref:'0.00 V',bad:s.ref,gnd:s.ref}],['સિગ્નલ: '+s.tA[0],{ok:a,noref:'0.00 V',bad:'2.71 V',gnd:'4.98 V'}],['સિગ્નલ: '+s.tB[0],{ok:b,noref:'0.00 V',bad:'2.71 V',gnd:'4.98 V'}],['ગ્રાઉન્ડ પિનથી બેટરી −: વોલ્ટેજ ડ્રોપ',{ok:'0.02 V',noref:'0.02 V',bad:'0.02 V',gnd:'4.90 V'}]]}}
+ if(f=='hall')return{c:'કી ON / ધીમે ફેરવતાં',sc:{ok:'સેન્સર અને વાયરિંગ ઠીક',nosup:'સપ્લાય વોલ્ટેજ નથી — ફ્યુઝ કે વાયર તપાસો',bad:'સેન્સર અંદરથી ખરાબ — સેન્સર બદલો',gnd:'સેન્સર ગ્રાઉન્ડ તૂટેલો — વાયરિંગ રિપેર'},
+  t:[['કી ON, કનેક્ટર કાઢી: સપ્લાય પિન',{ok:s.ref,nosup:'0.0 V',bad:s.ref,gnd:s.ref}],['ફેરવતાં સિગ્નલ (સ્કોપ)',{ok:'0 ↔ 5 V પલ્સ',nosup:'0 V સ્થિર',bad:'5 V સ્થિર',gnd:'5 V સ્થિર'}],['ગ્રાઉન્ડ પિનથી બેટરી −: ડ્રોપ',{ok:'0.02 V',nosup:'0.02 V',bad:'0.02 V',gnd:'4.80 V'}]]};
+ if(f=='induct')return{c:'એન્જિન ક્રેન્ક થાય પણ ચાલુ ન થાય',sc:{ok:'સેન્સર અને વાયરિંગ ઠીક',open:'કોઇલ ઓપન — સેન્સર બદલો',gap:'એર ગેપ વધુ / ટીપ પર ધાતુની રજ — સાફ કરી ગેપ સેટ કરો',short:'કોઇલ શોર્ટ — સેન્સર બદલો'},
+  t:[['કનેક્ટર કાઢી: કોઇલ રેઝિસ્ટન્સ',{ok:'950 Ω',open:'OL',gap:'950 Ω',short:'0.4 Ω'}],['ક્રેન્ક કરતાં AC વોલ્ટ',{ok:'2.4 V AC',open:'0.0 V',gap:'0.2 V AC',short:'0.0 V'}],['સેન્સર કાઢી ટીપ તપાસ',{ok:'સાફ, ગેપ 1.0 mm',open:'સાફ',gap:'રજ ચોંટેલી, ગેપ 3 mm',short:'સાફ'}]]};
+ if(f=='knock')return{c:'ટકટક અવાજ, ચેક લાઇટ',sc:{ok:'સેન્સર ઠીક',crack:'ક્રિસ્ટલ તૂટેલો — સેન્સર બદલો',loose:'સેન્સર ઢીલો — સાચા ટૉર્કથી કસો'},
+  t:[['કનેક્ટર કાઢી: રેઝિસ્ટન્સ',{ok:'OL (ખૂબ ઊંચો)',crack:'OL',loose:'OL'}],['બ્લોક પર હળવો ટકોરો: સિગ્નલ',{ok:'180 mV ઝટકો',crack:'0 mV',loose:'25 mV'}],['માઉન્ટિંગ બોલ્ટ ટૉર્ક',{ok:'20 Nm',crack:'20 Nm',loose:'6 Nm'}]]};
+ if(f=='o2')return{c:'ઇંધણ વપરાશ વધુ, PUC ફેલ',sc:{ok:'સેન્સર ઠીક',heater:'હીટર ઓપન — સેન્સર બદલો',lazy:'સેન્સર ધીમો (જૂનો) — સેન્સર બદલો',cont:'સેન્સર દૂષિત (ઓઇલ/સિલિકોન) — કારણ શોધી બદલો'},
+  t:[['હીટર રેઝિસ્ટન્સ',{ok:'4.5 Ω',heater:'OL',lazy:'4.6 Ω',cont:'4.4 Ω'}],['ગરમ એન્જિન 2500 RPM: સિગ્નલ',{ok:'0.1 ↔ 0.9 V ઝડપી',heater:'0.1 ↔ 0.9 V ઝડપી',lazy:'0.3 ↔ 0.6 V ધીમું',cont:'0.1 V સ્થિર'}],['ઠંડા સ્ટાર્ટ પછી સક્રિય થવાનો સમય',{ok:'30 સેકન્ડ',heater:'4 મિનિટ',lazy:'40 સેકન્ડ',cont:'સક્રિય થતો નથી'}]]};
+ if(f=='tc')return{c:'DPF રીજનરેશન થતું નથી',sc:{ok:'સેન્સર ઠીક',open:'થર્મોકપલ તૂટેલો — સેન્સર બદલો',short:'વાયર શોર્ટ — વાયરિંગ તપાસો'},
+  t:[['કનેક્ટર કાઢી: કન્ટિન્યુટી',{ok:'4 Ω',open:'OL',short:'4 Ω'}],['આઇડલ પર સ્કેન તાપમાન',{ok:'210°C',open:'-40°C (ખામી)',short:'28°C (બહારનું)'}],['આઇડલ પર mV',{ok:'8.6 mV',open:'OL',short:'0.0 mV'}]]};
+ if(f=='nox')return{c:'MIL ચાલુ, એડબ્લૂ ચેતવણી',sc:{ok:'સેન્સર ઠીક',nopower:'સપ્લાય નથી — ફ્યુઝ કે રિલે તપાસો',dead:'સેન્સર ખરાબ — મોડ્યુલ સાથે બદલો'},
+  t:[['કી ON: સપ્લાય પિન',{ok:'12.3 V',nopower:'0.0 V',dead:'12.3 V'}],['સ્કેન ટૂલ: CAN સંદેશ',{ok:'મળે છે',nopower:'મળતો નથી',dead:'મળે છે, ભૂલ ફ્લેગ'}],['ગરમ આઇડલ પર NOx',{ok:'180 ppm',nopower:'—',dead:'3012 (અમાન્ય)'}]]};
+ if(f=='sw')return{c:'આઇડલ પર ઓઇલ લાઇટ ચાલુ',sc:{ok:'સ્વીચ અને ઓઇલ પ્રેશર ઠીક',stuck:'સ્વીચ બંધ ચોંટી — સ્વીચ બદલો',lowp:'ખરેખર ઓઇલ પ્રેશર ઓછું — એન્જિન તરત બંધ કરો!'},
+  t:[['એન્જિન બંધ: સ્વીચથી બોડી',{ok:'0 Ω',stuck:'0 Ω',lowp:'0 Ω'}],['એન્જિન આઇડલ: સ્વીચથી બોડી',{ok:'OL',stuck:'0 Ω',lowp:'0 Ω'}],['મિકેનિકલ ગેજથી આઇડલ પ્રેશર',{ok:'2.5 bar',stuck:'2.5 bar',lowp:'0.2 bar'}]]};
+ return{c:'WIF લાઇટ વિશે ફરિયાદ',sc:{ok:'સેન્સર ઠીક, પાણી નથી',water:'ખરેખર પાણી — ડ્રેઇન કરી બ્લીડ કરો',bad:'સેન્સર ખરાબ (શોર્ટ) — સેન્સર બદલો'},
+  t:[['ડેશબોર્ડ WIF લાઇટ',{ok:'બંધ',water:'ચાલુ',bad:'ચાલુ'}],['ડ્રેઇન કરતાં નીકળતું પ્રવાહી',{ok:'માત્ર ડીઝલ',water:'પહેલાં પાણી, પછી ડીઝલ',bad:'માત્ર ડીઝલ'}],['સેન્સર કાઢી સૂકા પ્રોબ વચ્ચે',{ok:'OL',water:'OL',bad:'120 Ω'}]]};
+}
+/* ---------- app ---------- */
+const KEY='sensorlab';let ST={};try{ST=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){ST={}}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(ST))}catch(e){}};
+const pr=id=>ST[id]||(ST[id]={});const isDone=id=>!!(ST[id]&&ST[id].a&&ST[id].m);const dc=()=>S.filter(s=>isDone(s.id)).length;
+const byId=id=>S.find(s=>s.id==id);
+let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2200)}
+function mark(id,k){const was=isDone(id);if(pr(id)[k])return;pr(id)[k]=1;save();updTop();toast(!was&&isDone(id)?`${byId(id).ab} પૂર્ણ ✓ (${dc()}/${S.length})`:k=='a'?'એનિમેશન પ્રયોગ પૂર્ણ ✓':'મીટર ટેસ્ટ પૂર્ણ ✓')}
+function updTop(){$('#tp').textContent=`${dc()}/${S.length}`}
+const app=$('#app');
+function engineMap(){const hs=S.map((s,i)=>`<g class="hs" tabindex="0" role="button" aria-label="${s.gu}" data-s="${s.id}"><circle cx="${s.at[0]}" cy="${s.at[1]}" r="9" fill="${isDone(s.id)?'#3FCB8A':'#E3A600'}" stroke="#0E2A2C" stroke-width="2"/><text x="${s.at[0]}" y="${s.at[1]+3.5}" font-size="9" text-anchor="middle" fill="#0E2A2C" font-weight="700">${i+1}</text></g>`).join('');
+ return SVG(360,256,`<rect width="360" height="256" fill="#0E2A2C"/>
+ <rect x="10" y="10" width="44" height="26" rx="4" fill="#2A4A50"/><text x="32" y="27" fill="${W}" font-size="9" text-anchor="middle">એર ફિલ્ટર</text><path d="M54 23 H300" stroke="#4A6A70" stroke-width="7"/>
+ <circle cx="306" cy="34" r="16" fill="#3A4A50" stroke="${W}"/><text x="306" y="38" fill="${W}" font-size="9" text-anchor="middle">ટર્બો</text><path d="M300 48 V60 H232 V40" stroke="#4A6A70" stroke-width="6" fill="none"/>
+ <rect x="122" y="56" width="142" height="30" fill="#4A5A62"/><rect x="128" y="40" width="130" height="14" rx="3" fill="#5A6A72"/><path d="M140 47 H250" stroke="${Y}" stroke-width="4"/><text x="194" y="38" fill="${DIM}" font-size="8" text-anchor="middle">કોમન રેલ</text>
+ <rect x="122" y="86" width="142" height="100" fill="#3A4A52"/><text x="193" y="168" fill="${W}" font-size="10" text-anchor="middle">સિલિન્ડર બ્લોક</text>
+ <path d="M126 186 H260 L250 214 H136 Z" fill="#2E3C44"/><text x="193" y="226" fill="${DIM}" font-size="8" text-anchor="middle">ઓઇલ સંપ</text>
+ <circle cx="112" cy="70" r="13" fill="none" stroke="${W}"/><circle cx="112" cy="180" r="18" fill="none" stroke="${W}"/><path d="M112 57 V193" stroke="#6E7F86" stroke-width="2" stroke-dasharray="3 3"/>
+ <path d="M264 76 H300 V170 H340 V196" stroke="#6E5A4A" stroke-width="8" fill="none"/><rect x="250" y="100" width="22" height="16" fill="#5B6CC4"/><rect x="286" y="198" width="68" height="26" rx="4" fill="#5A4A42"/><text x="320" y="215" fill="${W}" font-size="9" text-anchor="middle">DPF + SCR</text>
+ <rect x="20" y="104" width="40" height="70" rx="6" fill="#4A5A3A"/><text x="40" y="146" fill="${W}" font-size="8" text-anchor="middle">ફ્યુઅલ</text><text x="40" y="156" fill="${W}" font-size="8" text-anchor="middle">ફિલ્ટર</text>
+ <rect x="6" y="214" width="44" height="34" rx="4" fill="#2A3A40"/><text x="28" y="252" fill="${DIM}" font-size="8" text-anchor="middle">પેડલ</text><rect x="54" y="214" width="40" height="34" rx="4" fill="#2A3A40"/><text x="74" y="252" fill="${DIM}" font-size="8" text-anchor="middle">ગિયરબોક્સ</text>${hs}`,'એન્જિન પર સેન્સરનાં સ્થાન')}
+function renderHome(){$('#ttl').textContent='એન્જિન સેન્સર ટ્રેનર';$('#back').style.visibility='hidden';
+ app.innerHTML=`<section class="hero"><h1>એન્જિનના બધા સેન્સર, અંદરથી સમજો</h1><p>ડીઝલ CRDI એન્જિનના ${S.length} સેન્સર: એનિમેશનમાં તેમનો સિદ્ધાંત, લાઇવ સિગ્નલ, વાયરિંગ, સાચાં મૂલ્યો અને મલ્ટિમીટરથી ખામી શોધવાનો અભ્યાસ.</p></section>
+ <div class="map">${engineMap()}</div><p class="muted">એન્જિન પર કોઈ પણ પીળું ટપકું દબાવો. લીલું = પૂર્ણ. (${dc()}/${S.length})</p>
+ <div class="legend"><span><i style="background:var(--ref)"></i>5 V રેફ / સપ્લાય</span><span><i style="background:var(--sig)"></i>સિગ્નલ</span><span><i style="background:var(--gnd)"></i>ગ્રાઉન્ડ</span></div>
+ <div class="actions"><button class="big" data-go="basics">મૂળ સિદ્ધાંત<small>ECU સેન્સર કેવી રીતે વાંચે</small></button><button class="big" data-go="diag">ખામી શોધો<small>${CASES.length} વાસ્તવિક કેસ</small></button><button class="big" data-go="quiz">ક્વિઝ<small>${QUIZ.length} પ્રશ્ન</small></button></div>
+ ${GROUPS.map((g,gi)=>`<div class="grp">${g}</div><div class="list">${S.map((s,i)=>s.g==gi?rowS(s,i):'').join('')}</div>`).join('')}
+ <p class="foot">મૂલ્યો સામાન્ય ઉદાહરણ છે; વાહન પ્રમાણે સર્વિસ મેન્યુઅલ જુઓ.<br>સરકારી ITI મણિનગર (ખોખરા), અમદાવાદ · મિકેનિક ડીઝલ ટ્રેડ</p>`;
+ app.querySelectorAll('.hs').forEach(h=>{const go=()=>location.hash='#s/'+h.dataset.s;h.addEventListener('click',go);h.addEventListener('keydown',e=>{if(e.key=='Enter'||e.key==' '){e.preventDefault();go()}})});
+ on(app,'[data-s]',b=>{if(b.tagName=='BUTTON')location.hash='#s/'+b.dataset.s});on(app,'[data-go]',b=>location.hash='#'+b.dataset.go)}
+const rowS=(s,i)=>`<button class="row${isDone(s.id)?' done':''}" data-s="${s.id}"><span class="ab">${s.ab}</span><span class="b"><b>${i+1}. ${s.gu}</b><small>${FAMN[s.fam]}${ST[s.id]&&ST[s.id].a?' · એનિમેશન ✓':''}${ST[s.id]&&ST[s.id].m?' · ટેસ્ટ ✓':''}</small></span></button>`;
+function renderSensor(id,tab){const s=byId(id);if(!s)return renderHome();const i=S.indexOf(s);$('#ttl').textContent=s.ab;$('#back').style.visibility='visible';
+ const TB=[['anim','એનિમેશન'],['pr','સિદ્ધાંત'],['w','વાયરિંગ અને મૂલ્યો'],['m','મીટર ટેસ્ટ']];tab=TB.some(t=>t[0]==tab)?tab:'anim';const st=pr(id);
+ app.innerHTML=`<p class="muted" style="margin:0">${FAMN[s.fam]} · ${s.en}</p><h2>${s.gu}</h2><div class="tabs" role="tablist">${TB.map(([k,l])=>`<button role="tab" aria-selected="${k==tab}" data-t="${k}">${l}${(k=='anim'&&st.a)||(k=='m'&&st.m)?' ✓':''}</button>`).join('')}</div><div class="panel" id="pane"></div>
+ <div class="flex" style="justify-content:space-between"><button class="btn" id="pv" ${i==0?'disabled':''}>← ${i>0?S[i-1].ab:''}</button><button class="btn" id="nx" ${i==S.length-1?'disabled':''}>${i<S.length-1?S[i+1].ab:''} →</button></div>`;
+ on(app,'[data-t]',b=>{history.replaceState(null,'','#s/'+id+'/'+b.dataset.t);renderSensor(id,b.dataset.t)});
+ $('#pv').onclick=()=>location.hash='#s/'+S[i-1].id;$('#nx').onclick=()=>location.hash='#s/'+S[i+1].id;
+ const pane=$('#pane');
+ if(tab=='anim'){pane.innerHTML='<div id="sim"></div><p class="note" id="hint"></p>';$('#hint').textContent={ntc:'તાપમાન ઠંડાથી ગરમ સુધી ખસેડો અને સિગ્નલ જુઓ.',pot:'સ્લાઇડર 0 થી 100% સુધી ખસેડો.',induct:'RPM શૂન્યથી ઊંચે લઈ જાઓ: તરંગ મોટું અને ઝડપી થાય છે.',hall:'ઝડપ નીચેથી ઊંચે લઈ જાઓ: પલ્સની ઊંચાઈ બદલાતી નથી.',press:'દબાણ ઓછાથી વધુ સુધી ખસેડો.',maf:'હવાનો પ્રવાહ શૂન્યથી ફુલ લોડ સુધી ખસેડો.',knock:'નોકિંગ શરૂ કરી સ્કોપમાં ફરક જુઓ.',o2:'મિશ્રણ રિચ (0.9) અને લીન (1.1) બંને બાજુ ખસેડો. પછી ક્લોઝ્ડ લૂપ ચાલુ કરો.',tc:'તાપમાન 0 થી 900°C સુધી ખસેડો.',sw:'પ્રેશર 0 થી ઉપર ખસેડો: લાઇટ ક્યારે બંધ થાય?',wif:'પાણીનું સ્તર વધારો: લાઇટ ક્યારે ચાલુ થાય?',nox:'ડોઝિંગ 0 થી 100% સુધી લઈ જાઓ અને SCR પછીનું NOx જુઓ.'}[s.fam];
+  try{SIM[s.fam]($('#sim'),s,()=>{mark(id,'a');const x=app.querySelector('[data-t="anim"]');if(x&&!/✓/.test(x.textContent))x.textContent+=' ✓'})}catch(e){pane.innerHTML='<p class="fb no">એનિમેશન લોડ ન થયું.</p>';console.error(e)}}
+ if(tab=='pr')pane.innerHTML=`<div class="pr"><h3>કામ</h3><p>${s.job}</p><h3>સ્થાન</h3><p>${s.loc}</p><h3>કાર્ય સિદ્ધાંત (${FAMN[s.fam]})</h3><ol>${s.pr.map(x=>`<li>${x}</li>`).join('')}</ol><h3>ખરાબ થાય તો લક્ષણ</h3><ul>${s.sym.map(x=>`<li>${x}</li>`).join('')}</ul><p class="muted">સામાન્ય ફોલ્ટ કોડ: ${s.dtc}</p></div>`;
+ if(tab=='w')pane.innerHTML=`<h3>કનેક્ટર પિન</h3><div class="pins">${s.wires.map(([l,c])=>`<div class="pin"><i style="background:${WC[c]}"></i>${l}</div>`).join('')}</div><p class="muted">પિન નંબર અને વાયર રંગ કંપની પ્રમાણે બદલાય. વાયરિંગ ડાયાગ્રામ જુઓ.</p>
+  <h3>સામાન્ય મૂલ્યો</h3><div class="tbl"><table><tr><th>સ્થિતિ</th><th>મૂલ્ય</th></tr>${s.vals.map(([a,b])=>`<tr><td>${a}</td><td class="v">${b}</td></tr>`).join('')}</table></div>`;
+ if(tab=='m'){const M=METER(s),keys=Object.keys(M.sc),f=pick(keys),seen=new Set();
+  pane.innerHTML=`<div class="case"><b>વાહન આવ્યું:</b> ${s.sym[0]}. સ્થિતિ: ${M.c}.<br>મીટરથી માપ લો, પછી ખામી નક્કી કરો.</div><div class="meter">${M.t.map((t,k)=>`<div class="mrow"><span>${t[0]}</span><button class="btn" data-k="${k}">માપો</button></div>`).join('')}</div>
+  <h3>તમારું નિદાન</h3><div class="col">${shuffle(keys).map(k=>`<button class="opt" data-d="${k}">${M.sc[k]}</button>`).join('')}</div><p class="fb" id="mf"></p><button class="btn p" id="again" hidden>નવો કેસ</button>`;
+  on(pane,'[data-k]',b=>{const k=+b.dataset.k;seen.add(k);b.outerHTML=`<span class="lcd">${M.t[k][1][f]}</span>`});
+  on(pane,'[data-d]',b=>{if(seen.size<2){setFb($('#mf'),false,'પહેલાં ઓછામાં ઓછાં 2 માપ લો. અંદાજથી ભાગ બદલવો એ સારો મિકેનિક નથી.');return}
+   const ok=b.dataset.d==f;b.classList.add(ok?'right':'wrong');if(ok){setFb($('#mf'),true,'સાચું નિદાન! માપ જ સાચો રસ્તો બતાવે છે.');pane.querySelectorAll('[data-d]').forEach(x=>x.disabled=true);$('#again').hidden=false;mark(id,'m')}else setFb($('#mf'),false,'ખોટું. માપનાં મૂલ્યો સામાન્ય મૂલ્યો સાથે ફરી સરખાવો.')});
+  $('#again').onclick=()=>renderSensor(id,'m')}
+ window.scrollTo(0,0)}
+function renderBasics(){$('#ttl').textContent='મૂળ સિદ્ધાંત';$('#back').style.visibility='visible';const fam={};S.forEach(s=>(fam[s.fam]=fam[s.fam]||[]).push(s.ab));
+ app.innerHTML=`<h2>ECU સેન્સર કેવી રીતે વાંચે છે</h2><div class="panel pr"><p>ECU કોઈ તાપમાન કે દબાણ સીધું "જોતું" નથી. તે માત્ર ત્રણ જ વસ્તુ વાંચે છે: <b>વોલ્ટેજ</b>, <b>ફ્રિક્વન્સી (પલ્સ)</b> અથવા <b>ડિજિટલ સંદેશ (CAN)</b>. દરેક સેન્સરનું કામ ભૌતિક રાશિને આ ત્રણમાંથી એકમાં ફેરવવાનું છે.</p>
+ <div class="legend"><span><i style="background:var(--ref)"></i>5 V રેફરન્સ: ECU સેન્સરને આપે</span><span><i style="background:var(--sig)"></i>સિગ્નલ: સેન્સર ECU ને પાછું મોકલે</span><span><i style="background:var(--gnd)"></i>ગ્રાઉન્ડ: ECU મારફત</span></div>
+ <h3>વાયરની સંખ્યા પરથી ઓળખ</h3><ul><li><b>2 વાયર:</b> NTC તાપમાન, ઇન્ડક્ટિવ CKP, થર્મોકપલ, પીઝો નોક. ECU પુલ-અપથી વાંચે કે સેન્સર પોતે વોલ્ટેજ બનાવે.</li><li><b>3 વાયર:</b> પોટેન્શિયોમીટર, પ્રેશર, હોલ. 5 V રેફ + સિગ્નલ + ગ્રાઉન્ડ.</li><li><b>4 કે વધુ:</b> MAF, હીટરવાળો લેમ્ડા, NOx (CAN).</li></ul>
+ <h3>ટેસ્ટ કરવાનો સોનેરી ક્રમ</h3><ol><li>પહેલાં સ્કેન ટૂલથી કોડ અને લાઇવ ડેટા જુઓ.</li><li>રેફ/સપ્લાય વોલ્ટેજ માપો.</li><li>ગ્રાઉન્ડ પર વોલ્ટેજ ડ્રોપ માપો (0.1 V થી ઓછો).</li><li>પછી સિગ્નલ, બે જુદી સ્થિતિમાં.</li><li>વાયરમાં સોય ભોંકશો નહીં; કનેક્ટરની પાછળથી (બેક-પ્રોબ) માપો.</li><li>પાવર ચાલુ સર્કિટ પર રેઝિસ્ટન્સ ન માપો.</li><li>રિપેર પછી કોડ ભૂંસી રોડ ટેસ્ટ કરો.</li></ol>
+ <div class="note">સિગ્નલ 0 V પર અટકે: શોર્ટ ટુ ગ્રાઉન્ડ કે રેફ નથી. સિગ્નલ 5 V પર અટકે: સિગ્નલ ઓપન કે ગ્રાઉન્ડ તૂટેલો. આ એક નિયમ ઘણી ખામી પકડી લે છે.</div></div>
+ <h3>સેન્સરના પ્રકાર</h3><div class="tbl panel"><table><tr><th>પ્રકાર</th><th>આ ટ્રેનરના સેન્સર</th></tr>${Object.keys(fam).map(k=>`<tr><td>${FAMN[k]}</td><td>${fam[k].join(', ')}</td></tr>`).join('')}</table></div>`;window.scrollTo(0,0)}
+function renderDiag(){$('#ttl').textContent='ખામી શોધો';$('#back').style.visibility='visible';const order=shuffle(CASES.map((_,i)=>i));let k=0,sc=0;
+ const draw=()=>{if(k>=order.length){app.innerHTML=`<h2>પરિણામ: ${sc} / ${order.length}</h2><p>${sc>=10?'શાબાશ! સ્કેન ડેટા વાંચવામાં તમે માહિર છો.':'સેન્સરનાં "સામાન્ય મૂલ્યો" ફરી જુઓ અને ફરી પ્રયત્ન કરો.'}</p><button class="btn p" id="rs">ફરી શરૂ કરો</button>`;$('#rs').onclick=renderDiag;return}
+  const c=CASES[order[k]];app.innerHTML=`<p class="muted">કેસ ${k+1} / ${order.length} · સાચા: ${sc}</p><div class="case"><b>ફરિયાદ:</b> ${c.c}<br><b>ફોલ્ટ કોડ:</b> ${c.dtc}</div>
+  <div class="panel"><h3 style="margin-top:0">સ્કેન ટૂલ લાઇવ ડેટા</h3><div class="tbl"><table>${c.d.map(([a,b])=>`<tr><td>${a}</td><td class="v">${b}</td></tr>`).join('')}</table></div></div>
+  <h3>કયો સેન્સર કે તેનું સર્કિટ ખામીવાળું?</h3><div class="col">${shuffle(c.o).map(o=>`<button class="opt" data-o="${o}">${byId(o).ab}: ${byId(o).gu}</button>`).join('')}</div><p class="fb" id="df"></p><button class="btn p" id="nx" hidden>આગળનો કેસ</button>`;
+  let first=true;on(app,'[data-o]',b=>{const ok=b.dataset.o==c.a;b.classList.add(ok?'right':'wrong');if(ok){if(first)sc++;const s=byId(c.a);setFb($('#df'),true,`સાચું! ${s.ab}. પહેલાં તેનું વાયરિંગ અને કનેક્ટર તપાસો, પછી સેન્સર.`);app.querySelectorAll('[data-o]').forEach(x=>x.disabled=true);$('#nx').hidden=false}else{first=false;setFb($('#df'),false,'ફરી વિચારો: કયું લાઇવ મૂલ્ય અશક્ય કે અસામાન્ય છે?')}});
+  $('#nx').onclick=()=>{k++;draw();window.scrollTo(0,0)}};draw()}
+function renderQuiz(){$('#ttl').textContent='ક્વિઝ';$('#back').style.visibility='visible';const Q=shuffle(QUIZ);let k=0,sc=0;
+ const draw=()=>{if(k>=Q.length){app.innerHTML=`<h2>સ્કોર: ${sc} / ${Q.length}</h2><p>${sc==Q.length?'પૂરા માર્ક! સેન્સરના સિદ્ધાંત પાકા છે.':'જે ખોટા પડ્યા તેનો "સિદ્ધાંત" ટેબ ફરી વાંચો.'}</p><button class="btn p" id="rs">ફરી રમો</button>`;$('#rs').onclick=renderQuiz;return}
+  const [q,...o]=Q[k];app.innerHTML=`<p class="muted">પ્રશ્ન ${k+1} / ${Q.length} · સ્કોર ${sc}</p><div class="panel"><h3 style="margin-top:0">${q}</h3><div class="col">${shuffle(o).map(x=>`<button class="opt" data-o="${x}">${x}</button>`).join('')}</div><p class="fb" id="qf"></p></div>`;
+  on(app,'[data-o]',b=>{const ok=b.dataset.o==o[0];if(ok)sc++;b.classList.add(ok?'right':'wrong');if(!ok)app.querySelectorAll('[data-o]').forEach(x=>{if(x.dataset.o==o[0])x.classList.add('right')});app.querySelectorAll('[data-o]').forEach(x=>x.disabled=true);setFb($('#qf'),ok,ok?'સાચું!':'સાચો જવાબ લીલામાં.');setTimeout(()=>{k++;draw()},1300)})};draw()}
+function route(){const h=location.hash.slice(1).split('/');updTop();if(h[0]=='s')renderSensor(h[1],h[2]);else if(h[0]=='basics')renderBasics();else if(h[0]=='diag')renderDiag();else if(h[0]=='quiz')renderQuiz();else{renderHome();window.scrollTo(0,0)}}
+$('#back').onclick=()=>{location.hash=''};
+window.addEventListener('hashchange',route);route();
+</script>
+</body>
+</html>
