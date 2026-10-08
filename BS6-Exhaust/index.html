@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BS6 ડીઝલ એક્ઝોસ્ટ – DOC, DPF, DEF, SCR – 3D કટ મોડલ</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Vadodara:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#E4E8EC;--panel:#F7F8FA;--ink:#1F2A33;--muted:#566370;--line:#C6CED5;--y:#F5C518;box-sizing:border-box;
+ padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root{--bg:#182027;--panel:#222C35;--ink:#E7ECEF;--muted:#9AA7B2;--line:#34414C}}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Hind Vadodara","Noto Sans Gujarati",sans-serif;font-size:17px;line-height:1.6}
+.wrap{max-width:820px;margin:0 auto;padding:0 12px 40px}
+h1{font-size:clamp(24px,6vw,36px);line-height:1.15;margin:18px 0 8px}
+h1 small{display:block;font-size:.45em;color:#B8622E;font-weight:600;margin-top:6px}
+.modes{display:flex;gap:6px;overflow-x:auto;padding:6px 0 10px}
+.modes button{flex:none;font:inherit;font-weight:700;font-size:15px;padding:7px 13px;border-radius:20px;border:2px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.modes button.on{background:var(--y);color:#1b1b1b;border-color:transparent}
+#stage{position:relative;height:min(72vh,640px);min-height:400px;border-radius:14px;overflow:hidden;background:#7F888E;touch-action:none;user-select:none;-webkit-user-select:none}
+#stage canvas{display:block;width:100%;height:100%}
+#tag{position:absolute;left:50%;top:14px;transform:translateX(-50%);background:var(--y);color:#1b1b1b;font-weight:700;font-size:22px;padding:4px 18px;border-radius:10px;pointer-events:none;white-space:nowrap}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.controls button{font:inherit;font-weight:700;font-size:16px;padding:8px 14px;border-radius:10px;border:0;background:#B8622E;color:#fff;cursor:pointer}
+.controls button.sec{background:var(--panel);color:var(--ink);border:1.5px solid var(--line)}
+.panel{background:var(--panel);border:2px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:10px}
+.panel h3{margin:0 0 4px;font-size:19px}.panel p{margin:0}
+.flow{margin-top:6px;font-weight:600;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.chips button{font:inherit;font-size:14px;font-weight:600;padding:6px 11px;border-radius:16px;border:1.5px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}.chips button.on{background:var(--y);color:#1b1b1b;border-color:#1b1b1b}#info{border-color:var(--y)}#info[hidden]{display:none}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:14px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+button:focus-visible{outline:3px solid #3E8FD0;outline-offset:2px}
+footer{margin-top:30px;text-align:center;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>BS6 ડીઝલ એક્ઝોસ્ટ ટ્રીટમેન્ટ<small>DOC • DPF • DEF • SCR – સોલીડ કટ-સેક્શન 3D મોડલ</small></h1>
+<div class="modes" id="modes">
+ <button data-m="full" class="on">આખી સિસ્ટમ</button><button data-m="engine">એન્જિન</button><button data-m="doc">1. DOC</button>
+ <button data-m="dpf">2. DPF</button><button data-m="def">3. DEF</button><button data-m="scr">4. SCR</button><button data-m="tail">ટેલ પાઇપ</button>
+</div>
+<div id="stage"><div id="tag">આખી સિસ્ટમ</div></div>
+<div class="controls">
+ <button id="play">વિરામ</button>
+ <button class="sec" id="regen">DPF રીજનરેશન</button>
+</div>
+<div class="legend">
+ <span><i style="background:#1b1b1b"></i>કાર્બન કણ (સૂટ)</span><span><i style="background:#6b5a4e"></i>એન્જિનનો ગેસ</span>
+ <span><i style="background:#8F4F3E"></i>NOx</span><span><i style="background:#B9A6FF"></i>એમોનિયા (NH3)</span><span><i style="background:#EEF3F6;border:1px solid #999"></i>સ્વચ્છ ગેસ</span>
+</div>
+<div class="panel" id="info" hidden><h3 id="iT"></h3><p id="iX"></p></div>
+<div class="panel"><h3 style="margin:0">ભાગ પસંદ કરો <span style="font-weight:500;font-size:14px;color:var(--muted)">– નામ પર કે મોડલ પરના ભાગ પર ટેપ કરો</span></h3><div class="chips" id="chips"></div></div>
+<div class="panel"><h3 id="mT"></h3><p id="mX"></p><p class="flow" id="mF"></p></div>
+<footer>Government ITI Maninagar – Mechanic Diesel</footer>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+const V3=THREE.Vector3,PI=Math.PI,rad=d=>d*PI/180;
+let seed=12345;function rnd(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}
+const stage=document.getElementById('stage');
+const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.localClippingEnabled=true;
+stage.insertBefore(renderer.domElement,stage.firstChild);
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x7F888E);
+const camera=new THREE.PerspectiveCamera(30,1,0.1,200);
+scene.add(new THREE.HemisphereLight(0xffffff,0x6a7075,0.75));
+const kl=new THREE.DirectionalLight(0xffffff,0.75);kl.position.set(-4,8,12);scene.add(kl);
+const fl=new THREE.DirectionalLight(0xdfe8ff,0.3);fl.position.set(6,-2,6);scene.add(fl);
+const CLIP=[new THREE.Plane(new V3(0,0,-1),0)];
+
+/* helpers */
+const MS=(c,o={})=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.6,metalness:.15},o));
+const MB=(c,o={})=>new THREE.MeshBasicMaterial(Object.assign({color:c},o));
+const edgeM=new THREE.LineBasicMaterial({color:0x3d4247,transparent:true,opacity:.55});
+let CUR=null;const PM={},ALL=[];
+function mesh(g,m,p=[0,0,0],par=scene){const o=new THREE.Mesh(g,m);o.position.set(p[0],p[1],p[2]);par.add(o);if(CUR){o.userData.part=CUR;o.userData.orig=m;(PM[CUR]=PM[CUR]||[]).push(o);ALL.push(o)}return o}
+function edges(o){o.add(new THREE.LineSegments(new THREE.EdgesGeometry(o.geometry,25),edgeM));return o}
+function solid(x0,x1,y0,y1,dep,face,side,par=scene){const g=new THREE.BoxGeometry(x1-x0,y1-y0,dep);const fm=MS(face),sm=MS(side);
+  return edges(mesh(g,[sm,sm,sm,sm,fm,sm],[(x0+x1)/2,(y0+y1)/2,-dep/2],par))}
+function rect(x0,x1,y0,y1,c,z=0.003,par=scene,o={}){return mesh(new THREE.PlaneGeometry(x1-x0,y1-y0),MB(c,o),[(x0+x1)/2,(y0+y1)/2,z],par)}
+function ribbon(pts,w,c,z=0.004,par=scene){const cv=new THREE.CatmullRomCurve3(pts.map(p=>new V3(p[0],p[1],0)),false,'centripetal');
+  const L=[],R=[];for(let i=0;i<=30;i++){const t=i/30,p=cv.getPointAt(t),d=cv.getTangentAt(t);const n=new V3(-d.y,d.x,0).multiplyScalar(w/2);L.push(p.clone().add(n));R.push(p.clone().sub(n))}
+  const s=new THREE.Shape();s.moveTo(L[0].x,L[0].y);L.forEach(p=>s.lineTo(p.x,p.y));R.reverse().forEach(p=>s.lineTo(p.x,p.y));
+  return mesh(new THREE.ShapeGeometry(s),MB(c),[0,0,z],par)}
+function disc(x,y,r,c,z=0.005,par=scene){return mesh(new THREE.CircleGeometry(r,28),MB(c),[x,y,z],par)}
+function cylX(r,len,m,p,par=scene,seg=32,open=false,r2){const o=mesh(new THREE.CylinderGeometry(r2===undefined?r:r2,r,len,seg,1,open),m,p,par);o.rotation.z=PI/2;return o}
+function crv(pts){return new THREE.CatmullRomCurve3(pts.map(p=>new V3(p[0],p[1],p[2]||0)),false,'centripetal')}
+const steelClip=MS(0xA9B0B6,{metalness:.45,roughness:.4,side:THREE.DoubleSide,clippingPlanes:CLIP});
+const C={cut:0xD9DDE0,side:0xA4ABB1,cav:0x3B4045,water:0x4A90D0,oil:0xD99A2B};
+
+/* ================= ENGINE (local coords, group E) ================= */
+const E=new THREE.Group();E.position.set(0,7.4,0);E.scale.setScalar(0.85);scene.add(E);CUR='engine';
+const CX=[-3,-1,1,3],OFF=[0,540,180,360],R=0.6,L=2.0,HEAD=3.35,LIFT=0.25;
+solid(-4.1,4.1,0.9,3.35,1.5,C.cut,C.side,E);
+solid(-4.1,4.1,-1.0,0.9,1.5,C.cut,C.side,E);
+solid(-3.9,3.9,-2.4,-1.0,1.4,C.cut,C.side,E);
+solid(-4.1,4.1,3.35,4.6,1.5,0xCDD3D8,0x9EA6AD,E);
+CUR='manifold';solid(-2.45,4.35,4.6,5.25,1.0,0xB3A79F,0x857A72,E);CUR='engine';
+rect(-3.9,3.9,-1.0,0.9,C.cav,0.003,E);
+[-2,0,2].forEach(x=>{rect(x-0.24,x+0.24,0.32,0.9,C.cut,0.004,E)});
+rect(-3.75,3.75,-2.25,-1.0,C.cav,0.003,E);rect(-3.75,3.75,-2.25,-1.85,C.oil,0.004,E);
+CUR='manifold';rect(-2.35,4.35,4.7,5.13,C.cav,0.003,E);CUR='engine';
+const gasMats=[],gasM=[];
+CX.forEach((cx,i)=>{
+  rect(cx-0.72,cx+0.72,0.9,3.35,C.cav,0.003,E);
+  const vi=cx-0.38,ve=cx+0.38;
+  ribbon([[vi,3.42],[cx-0.7,3.8],[cx-0.85,4.3]],0.26,C.cav,0.004,E);
+  ribbon([[ve,3.42],[cx+0.73,3.75],[cx+0.93,4.2],[cx+0.98,4.75]],0.26,C.cav,0.004,E);
+  rect(vi-0.17,vi+0.17,3.85,4.45,C.cav,0.0035,E);rect(ve-0.17,ve+0.17,3.85,4.45,C.cav,0.0035,E);
+  rect(cx-0.09,cx+0.09,3.35,4.6,C.cav,0.0035,E);
+  const gm=MB(0x8fd3ff,{transparent:true,opacity:.7});gasMats.push(gm);
+  const g=rect(cx-0.7,cx+0.7,0,1,0x8fd3ff,0.006,E);g.material=gm;g.geometry.translate(0,-0.5,0);gasM.push(g);
+});
+[-3.95,-2,0,2,3.95].forEach((x,k)=>{const w=(k===0||k===4)?0.12:0.16;rect(x-w/2,x+w/2,1.35,3.2,C.water,0.004,E)});
+[-2,0,2].forEach(x=>rect(x-0.08,x+0.08,3.45,4.4,C.water,0.004,E));
+rect(-4.1,4.1,3.33,3.37,0x2a2e32,0.0045,E);
+/* crank */
+const crank=new THREE.Group();E.add(crank);
+const steel=MS(0xB3BAC0,{metalness:.55,roughness:.35}),dsteel=MS(0x6A7178,{metalness:.5,roughness:.4});
+[-4,-2,0,2,4].forEach(x=>cylX(0.26,0.4,steel,[x,0,0],crank));
+function cwGeo(down){const s=new THREE.Shape();const a0=down?PI:0;s.moveTo(0,0);for(let i=0;i<=24;i++){const a=a0+i/24*PI;s.lineTo(0.75*Math.cos(a),0.75*Math.sin(a))}s.lineTo(0,0);
+  const g=new THREE.ExtrudeGeometry(s,{depth:0.12,bevelEnabled:false});g.translate(0,0,-0.06);g.rotateY(PI/2);return g}
+CX.forEach((cx,i)=>{const pa=rad(-OFF[i]);const py=R*Math.cos(pa),pz=R*Math.sin(pa);cylX(0.2,0.42,steel,[cx,py,pz],crank);
+  [cx-0.29,cx+0.29].forEach(wx=>{mesh(new THREE.BoxGeometry(0.12,R+0.5,0.55),steel,[wx,py/2,0],crank);mesh(cwGeo(py>0),dsteel,[wx,0,0],crank)})});
+/* rods, pistons, valves, injectors */
+const rods=[],pistons=[],valves=[];
+class Helix extends THREE.Curve{constructor(r,n){super();this.r=r;this.n=n}getPoint(t,o=new V3()){const a=t*PI*2*this.n;return o.set(this.r*Math.cos(a),t,this.r*Math.sin(a))}}
+const springGeo=new THREE.TubeGeometry(new Helix(0.12,6),120,0.02,6);
+const springM=MS(0x9AA2A9,{metalness:.5});
+CX.forEach(cx=>{
+  const r=new THREE.Group();E.add(r);rods.push(r);
+  mesh(new THREE.BoxGeometry(0.16,L,0.22),steel,[0,0,0],r);cylX(0.28,0.2,steel,[0,-L/2,0],r);cylX(0.16,0.2,steel,[0,L/2,0],r);
+  const p=new THREE.Group();p.position.x=cx;E.add(p);pistons.push(p);
+  const pg=new THREE.BoxGeometry(1.42,0.9,1.3);const pf=MS(0xE08A4A,{roughness:.45,metalness:.25}),ps=MS(0xB5652F,{roughness:.5,metalness:.25});
+  edges(mesh(pg,[ps,ps,ps,ps,pf,ps],[0,0.15,-0.64],p));
+  [0.5,0.42,0.34].forEach(y=>rect(-0.71,0.71,y-0.015,y+0.015,0x5a2c12,0.014,p));
+  disc(0,0,0.13,0x3b2a20,0.015,p);
+  const mk=x=>{const g=new THREE.Group();E.add(g);const st=new THREE.CylinderGeometry(0.045,0.045,1.15,10);st.translate(0,0.575,0);mesh(st,steel,[0,0,0.02],g);
+    mesh(new THREE.CylinderGeometry(0.19,0.22,0.07,24),steel,[0,0.035,0.02],g);g.position.x=x;
+    const sp=mesh(springGeo,springM,[x,3.9,0.02],E);return {g,sp}};
+  valves.push({in:mk(cx-0.38),ex:mk(cx+0.38)});
+  mesh(new THREE.CylinderGeometry(0.07,0.07,1.25,14),MS(0x2a2d31),[cx,3.95,0.02],E);
+  mesh(new THREE.CylinderGeometry(0.035,0.07,0.1,10),MS(0x2a2d31),[cx,3.29,0.02],E);
+});
+const sprays=CX.map(cx=>{const g=new THREE.ConeGeometry(0.35,0.3,16,1,true);const m=mesh(g,MB(0xFFE9A0,{transparent:true,opacity:.75,side:THREE.DoubleSide}),[cx,3.1,0.03],E);m.visible=false;return m});
+/* engine port smoke */
+CUR=null;const portC=CX.map(cx=>crv([[cx+0.38,3.3,0.05],[cx+0.73,3.75,0.05],[cx+0.93,4.2,0.05],[cx+0.98,4.8,0.05]]));
+const PS=10,portIM=new THREE.InstancedMesh(new THREE.SphereGeometry(0.1,10,8),MB(0xffffff),4*PS);E.add(portIM);
+
+/* ================= EXHAUST LINE (world) ================= */
+const MAINPTS=[[-2.04,11.565],[0.8,11.565],[3.4,11.565],[4.2,11.45],[4.45,10.6],[4.45,8.5],[4.45,5.0],[4.3,3.85],[3.85,3.6],[3.4,3.6],[1.0,3.6],[-1.5,3.6],[-2.9,3.6],[-3.6,3.6],[-4.15,3.35],[-4.35,2.0],[-4.15,0.65],[-3.7,0.4],[-3.1,0.4],[-1.5,0.4],[0.5,0.4],[2.25,0.4],[3.5,0.4],[4.25,0.35],[4.6,0.0],[4.65,-0.9],[4.7,-2.6]];
+const MAIN=crv(MAINPTS),ML=MAIN.getLength();
+const SAMP=[];for(let i=0;i<=2000;i++){const p=MAIN.getPointAt(i/2000);SAMP.push([p.x,p.y])}
+function sAt(x,yRow,dir){/* first sample on row matching x */let best=-1,bd=1e9;for(let i=0;i<=2000;i++){const [px,py]=SAMP[i];if(Math.abs(py-yRow)<0.05){const d=Math.abs(px-x);if(d<bd){bd=d;best=i}}}return best/2000*ML}
+const sMan=sAt(3.4,11.565),sA=sAt(3.75,3.6),sB=sAt(3.4,3.6),sCc=sAt(1.7,3.6),sD=sAt(1.2,3.6),sE=sAt(-2.9,3.6),sF=sAt(-3.25,3.6),
+      sG=sAt(-3.7,0.4),sI=sAt(-3.1,0.4),sJ=sAt(-1.5,0.4),sK=sAt(-1.15,0.4),sLL=sAt(2.25,0.4),sM=sAt(2.35,0.4),sN=sAt(3.15,0.4),sO=sAt(3.5,0.4),sEnd=sAt(4.65,-0.9);
+function radAt(s){const lerp=(a,b,u)=>a+(b-a)*Math.min(1,Math.max(0,u));
+  if(s<sMan)return 0.2;if(s<sA)return 0.15;if(s<sB)return lerp(0.15,0.6,(s-sA)/(sB-sA));if(s<sE)return 0.6;if(s<sF)return lerp(0.6,0.15,(s-sE)/(sF-sE));
+  if(s<sG)return 0.15;if(s<sJ)return 0.22;if(s<sK)return lerp(0.22,0.6,(s-sJ)/(sK-sJ));if(s<sN)return 0.6;if(s<sO)return lerp(0.6,0.13,(s-sN)/(sO-sN));return 0.13}
+/* pipes (clipped back half) */
+function pipe(pts,r){const c=crv(pts);mesh(new THREE.TubeGeometry(c,Math.round(c.getLength()*20),r,24,false),steelClip)}
+CUR='downpipe';pipe([[3.4,11.565],[4.2,11.45],[4.45,10.6],[4.45,8.5],[4.45,5.0],[4.3,3.85],[3.85,3.6],[3.7,3.6]],0.2);
+CUR='ubend';pipe([[-3.3,3.6],[-3.6,3.6],[-4.15,3.35],[-4.35,2.0],[-4.15,0.65],[-3.7,0.4],[-3.4,0.4]],0.2);
+CUR='tail';pipe([[3.4,0.4],[4.25,0.35],[4.6,0.0],[4.65,-0.9]],0.17);
+CUR='mixer';cylX(0.28,2.4,steelClip,[-2.6,0.4,0],scene,32,true);
+/* cans */
+function cone(xa,xb,ra,rb,y){const o=mesh(new THREE.CylinderGeometry(rb,ra,Math.abs(xb-xa),40,1,true),steelClip,[(xa+xb)/2,y,0]);o.rotation.z=-PI/2;return o}
+function rim(xa,xb,y,r){[y+r,y-r].forEach(yy=>rect(xa,xb,yy-0.035,yy+0.035,C.cut,0.002))}
+function substrate(xa,xb,y,r,face,line,plugs){const ri=r-0.08;
+  const back=cylX(ri,xb-xa,MS(face,{side:THREE.DoubleSide,clippingPlanes:CLIP,roughness:.8,metalness:0}),[(xa+xb)/2,y,0],scene,40,true);
+  rect(xa,xb,y-ri,y+ri,face,-0.02);const n=10,h=2*ri/n;
+  for(let k=0;k<=n;k++)rect(xa,xb,y-ri+k*h-0.012,y-ri+k*h+0.012,line,-0.015);
+  if(plugs)for(let k=0;k<n;k++){const x=(k%2)?xa:xb-0.12;rect(x,x+0.12,y-ri+k*h+0.012,y-ri+(k+1)*h-0.012,plugs,-0.012)}
+  return h}
+const Y1=3.6,Y2=0.4,RC=0.75;
+CUR='can1';cylX(RC,7.0,steelClip,[0.25,Y1,0],scene,48,true);rim(-3.25+0.35,3.75-0.35,Y1,RC);
+cone(3.4,3.75,RC,0.2,Y1);cone(-2.9,-3.25,RC,0.2,Y1);
+CUR='doc';substrate(1.75,3.35,Y1,RC,0xE3DCCB,0xB9AE92);
+CUR='dpf';substrate(-2.85,1.15,Y1,RC,0x8E9499,0x5C6268,0x2B2F33);
+CUR='can2';cylX(RC,3.5,steelClip,[1.0,Y2,0],scene,48,true);rim(-1.15,3.15,Y2,RC);
+cone(-1.5,-1.15,0.28,RC,Y2);cone(3.15,3.5,RC,0.17,Y2);
+CUR='scr';substrate(-1.1,2.25,Y2,RC,0xEADFA8,0xBCAF6E);
+CUR='asc';substrate(2.35,3.1,Y2,RC,0xC9D6C4,0x94A58E);CUR='can2';
+[[1.45,Y1],[2.3,Y2]].forEach(([x,y])=>rect(x-0.05,x+0.05,y-RC,y+RC,0x8A9097,0.001));
+/* mixer blades */
+CUR='mixer';[-2.55,-2.25,-1.95].forEach(x=>{const b=mesh(new THREE.PlaneGeometry(0.06,0.5),MB(0x4b5258),[x,Y2,0.002]);b.rotation.z=0.5});
+/* DEF tank & injector */
+CUR='tank';solid(-4.1,-1.9,-3.05,-1.55,1.2,C.cut,C.side);
+rect(-3.95,-2.05,-2.9,-1.7,0x4e555b,0.003);const defLiq=rect(-3.95,-2.05,-2.9,-2.15,0x7EC3F2,0.004);
+CUR='pump';rect(-2.6,-2.25,-2.85,-1.7,0x2b2f33,0.005);CUR='heater';
+for(let k=0;k<6;k++)rect(-3.8+k*0.2,-3.7+k*0.2,-2.85,-2.8,0xE8742A,0.006);
+CUR='tank';mesh(new THREE.CylinderGeometry(0.22,0.22,0.18,24),MS(0x1E5FD0,{roughness:.4}),[-3.6,-1.46,0]);CUR='defline';
+const defLine=crv([[-2.42,-1.55,0.03],[-2.0,-0.7,0.03],[-1.95,0.9,0.03],[-2.6,1.25,0.03],[-3.1,1.12,0.03]]);
+mesh(new THREE.TubeGeometry(defLine,60,0.045,8),MS(0x2d6fb3,{roughness:.5}));
+CUR='injector';mesh(new THREE.CylinderGeometry(0.1,0.08,0.45,16),MS(0x2a2d31),[-3.1,0.86,0.03]);
+const defSpray=mesh((()=>{const g=new THREE.ConeGeometry(0.22,0.4,18,1,true);g.translate(0,-0.2,0);return g})(),MB(0xD8F0FF,{transparent:true,opacity:.75,side:THREE.DoubleSide}),[-3.1,0.63,0.05]);
+/* sensors */
+const sens=(x,y,a)=>{const o=mesh(new THREE.CylinderGeometry(0.06,0.06,0.35,10),MS(0x2a2d31),[x,y,0.03]);o.rotation.z=a;mesh(new THREE.CylinderGeometry(0.1,0.1,0.1,6),MS(0xB0B8BF,{metalness:.6}),[x,y,0.03])};
+CUR='nox1';sens(4.7,8.0,PI/2);CUR='temp1';sens(4.0,3.95,0.3);CUR='temp2';sens(-1.3,0.95,0);CUR='nox2';sens(3.35,0.95,0);CUR='dp';
+mesh(new THREE.TubeGeometry(crv([[1.45,4.35,0.03],[0.9,5.0,0.03],[-0.4,5.0,0.03]]),30,0.03,6),MS(0x222222));
+mesh(new THREE.TubeGeometry(crv([[-2.95,4.3,0.03],[-2.0,5.0,0.03],[-1.0,5.0,0.03]]),30,0.03,6),MS(0x222222));
+mesh(new THREE.BoxGeometry(0.6,0.35,0.3),MS(0x2a2d31),[-0.7,5.0,0.03]);CUR=null;
+
+/* ================= PARTICLES ================= */
+const NP=340,flowIM=new THREE.InstancedMesh(new THREE.SphereGeometry(0.075,10,8),MB(0xffffff),NP);scene.add(flowIM);
+const NH=80,nhIM=new THREE.InstancedMesh(new THREE.SphereGeometry(0.07,10,8),MB(0xffffff),NH);scene.add(nhIM);
+const NT=420,trapIM=new THREE.InstancedMesh(new THREE.SphereGeometry(0.055,8,6),MB(0xffffff),NT);scene.add(trapIM);
+const ND=24,dIM=new THREE.InstancedMesh(new THREE.SphereGeometry(0.04,8,6),MB(0x7EC3F2),ND);scene.add(dIM);
+const parts=[],nh=[],trap=[];
+for(let i=0;i<NP;i++)parts.push({s:rnd()*ML,lane:rnd()*2-1,soot:rnd()<0.32,ph:rnd()*6});
+parts.forEach(p=>{if(p.s>sD)p.soot=false});
+for(let i=0;i<NH;i++)nh.push({s:sI+rnd()*(sK-sI),lane:rnd()*2-1,a:1});
+const cEng=new THREE.Color(0x6B5A4E),cNox=new THREE.Color(0x8F4F3E),cClean=new THREE.Color(0xEEF3F6),cSoot=new THREE.Color(0x1B1B1B),cNH=new THREE.Color(0xB9A6FF),cGlow=new THREE.Color(0xFF7A1A);
+let regen=false,regenT=0;
+function trapSoot(){if(trap.length>=NT)return;const ri=RC-0.08,n=10,h=2*ri/n;const k=1+Math.floor(rnd()*(n-1));
+  trap.push({x:-2.8+rnd()*3.85,y:Y1-ri+k*h+(rnd()<0.5?0.03:-0.03),b:0})}
+function fillSoot(n){for(let i=0;i<n;i++)trapSoot()}
+const dm=new THREE.Object3D(),tc=new THREE.Color(),tmp=new V3(),tan=new V3();
+function placeOnPath(s,lane,z){const u=Math.min(1,Math.max(0,s/ML));const p=MAIN.getPointAt(u);MAIN.getTangentAt(u,tan);const r=radAt(s)*0.8;
+  return tmp.set(p.x-tan.y*lane*r,p.y+tan.x*lane*r,z)}
+function gasColor(s,o){if(s<sB)return o.copy(cEng);if(s<sCc)return o.copy(cEng).lerp(cNox,(s-sB)/(sCc-sB));if(s<sK)return o.copy(cNox);if(s<sLL)return o.copy(cNox).lerp(cClean,(s-sK)/(sLL-sK));return o.copy(cClean)}
+
+/* ================= ANIMATION ================= */
+const lift=(t,a)=>(t>=a&&t<=a+180)?LIFT*Math.sin(PI*(t-a)/180):0;
+const gc={air:new THREE.Color(0x8FD3FF),hot:new THREE.Color(0xFFB070),fire:new THREE.Color(0xFFE066),burn:new THREE.Color(0xFF5A1A),spent:new THREE.Color(0x8A6A5A),ex:new THREE.Color(0x8A8A8A)};
+function cylGas(t,o){if(t<180)return o.copy(gc.air);if(t<360)return o.copy(gc.air).lerp(gc.hot,(t-180)/180);if(t<372)return o.copy(gc.fire);if(t<540)return o.copy(gc.burn).lerp(gc.spent,(t-372)/168);return o.copy(gc.ex)}
+let theta=0,playing=true,speed=0.5,flowT=0,dPh=0;
+const lEx=[0,0,0,0];
+function update(dt){
+  const ed=playing?dt:0;theta=(theta+ed*200*speed)%720;
+  crank.rotation.x=rad(theta);
+  for(let i=0;i<4;i++){const t=(theta-OFF[i]+720)%720,a=rad(t),py=R*Math.cos(a),pz=R*Math.sin(a),yp=py+Math.sqrt(L*L-pz*pz);
+    pistons[i].position.y=yp;rods[i].position.set(CX[i],(py+yp)/2,pz/2);rods[i].rotation.x=Math.atan2(-pz,yp-py);
+    const top=yp+0.6;gasM[i].position.y=HEAD;gasM[i].scale.y=Math.max(0.01,HEAD-top);cylGas(t,gasMats[i].color);
+    const li=lift(t,0),le=lift(t,540);lEx[i]=le;
+    valves[i].in.g.position.y=3.38-li;valves[i].in.sp.scale.y=0.5-li;valves[i].ex.g.position.y=3.38-le;valves[i].ex.sp.scale.y=0.5-le;
+    const inj=t>=350&&t<372;sprays[i].visible=inj;if(inj){const k=(t-350)/22;sprays[i].scale.set(0.5+k,0.5+k,0.5+k)}
+    for(let j=0;j<PS;j++){const u=((flowT*0.9+j/PS)%1);const on=le>0.03;dm.position.copy(portC[i].getPointAt(u));const sc=on?0.8+0.5*Math.sin(j*1.7):0;dm.scale.set(sc,sc,sc);dm.updateMatrix();
+      portIM.setMatrixAt(i*PS+j,dm.matrix);tc.copy(cEng).lerp(cSoot,(j%3===0)?0.8:0.1);portIM.setColorAt(i*PS+j,tc)}
+  }
+  portIM.instanceMatrix.needsUpdate=true;portIM.instanceColor.needsUpdate=true;
+  flowT+=ed*speed*1.6;
+  const fs=ed*(0.5+speed);
+  /* main flow */
+  parts.forEach((p,i)=>{const r=radAt(p.s);p.s+=fs*2.0*Math.sqrt(0.15/r);
+    if(p.soot&&p.s>sD&&p.s<sE){trapSoot();p.s=rnd()*0.4;p.lane=rnd()*2-1}
+    if(p.s>ML){p.s=rnd()*0.3;p.lane=rnd()*2-1;p.soot=rnd()<0.32}
+    const z=0.06;placeOnPath(p.s,p.lane,z);
+    let sc=p.soot?1.0:0.85+0.25*Math.sin(p.ph+p.s*3);if(p.s>sEnd){const f=Math.max(0,1-(p.s-sEnd)/1.4);sc*=0.5+1.6*(1-f);if(f<=0)sc=0}
+    if(p.s>sEnd)tmp.x+=Math.sin(p.ph+p.s*2)*0.3*(p.s-sEnd);
+    dm.position.copy(tmp);dm.scale.set(sc,sc,sc);dm.updateMatrix();flowIM.setMatrixAt(i,dm.matrix);
+    if(p.soot)tc.copy(cSoot);else gasColor(p.s,tc);if(p.s>sEnd){tc.lerp(new THREE.Color(0x9AA3AA),0.2)}flowIM.setColorAt(i,tc)});
+  flowIM.instanceMatrix.needsUpdate=true;flowIM.instanceColor.needsUpdate=true;
+  /* NH3 */
+  nh.forEach((q,i)=>{q.s+=fs*2.0*Math.sqrt(0.15/radAt(q.s));
+    if(q.s>sK+0.4){q.a-=fs*1.4}
+    if(q.a<=0||q.s>sN){q.s=sI;q.lane=(rnd()*2-1)*0.3;q.a=1}
+    const spread=Math.min(1,(q.s-sI)/0.8);placeOnPath(q.s,q.lane*(0.3+0.7*spread)+Math.sin(q.s*9+i)*0.2*spread,0.07);
+    const sc=Math.max(0,q.a)*(0.7+0.4*spread);dm.position.copy(tmp);dm.scale.set(sc,sc,sc);dm.updateMatrix();nhIM.setMatrixAt(i,dm.matrix);nhIM.setColorAt(i,cNH)});
+  nhIM.instanceMatrix.needsUpdate=true;nhIM.instanceColor.needsUpdate=true;
+  /* DEF line droplets & spray */
+  dPh=(dPh+fs*0.8)%1;for(let j=0;j<ND;j++){dm.position.copy(defLine.getPointAt((dPh+j/ND)%1)).setZ(0.08);dm.scale.set(1,1,1);dm.updateMatrix();dIM.setMatrixAt(j,dm.matrix)}dIM.instanceMatrix.needsUpdate=true;
+  const pul=0.75+0.25*Math.sin(flowT*9);defSpray.scale.set(pul,pul,pul);
+  /* trapped soot + regeneration */
+  if(regen){regenT+=ed;trap.forEach(q=>{q.b+=ed*(0.35+0.4*((q.x+3)%1))});for(let i=trap.length-1;i>=0;i--)if(trap[i].b>1.6)trap.splice(i,1)}
+  for(let i=0;i<NT;i++){const q=trap[i];if(!q){dm.scale.set(0,0,0);dm.position.set(0,0,0);dm.updateMatrix();trapIM.setMatrixAt(i,dm.matrix);continue}
+    const b=q.b,sc=b<1?1+0.4*b:Math.max(0,1-(b-1)*1.6);dm.position.set(q.x,q.y,0.05);dm.scale.set(sc,sc,sc);dm.updateMatrix();trapIM.setMatrixAt(i,dm.matrix);
+    tc.copy(cSoot).lerp(cGlow,Math.min(1,b*1.4));if(b>1)tc.lerp(new THREE.Color(0xFFE6B0),Math.min(1,(b-1)*1.5));trapIM.setColorAt(i,tc)}
+  trapIM.instanceMatrix.needsUpdate=true;trapIM.instanceColor.needsUpdate=true;
+  if(regen&&trap.length===0){regen=false}
+}
+
+/* ================= UI / CAMERA ================= */
+const VIEWS={
+ full:['આખી સિસ્ટમ',[0.2,4.6,0],32,'એન્જિનમાંથી નીકળતો ધુમાડો DOC, DPF, DEF અને SCR માંથી પસાર થઈ સ્વચ્છ બને.','એન્જિન → DOC → DPF → DEF ઇન્જેક્શન → SCR → ASC → ટેલ પાઇપ'],
+ engine:['એન્જિન',[0.3,8.6,0],15,'એક્ઝોસ્ટ વાલ્વ ખૂલે ત્યારે ધુમાડો મેનીફોલ્ડમાં જાય. તેમાં કાર્બન કણ (સૂટ), NOx, CO અને HC હોય.','કાર્બન કણ • NOx • CO • HC'],
+ doc:['1. DOC',[2.5,3.6,0],8,'ડીઝલ ઓક્સિડેશન કેટાલિસ્ટ: પ્લેટિનમ-પેલેડિયમના પડ પર CO અને HC બળીને CO2 અને પાણી બને. NO નું NO2 બને, જે DPF ને મદદ કરે.','CO, HC → CO2, H2O'],
+ dpf:['2. DPF',[-0.9,3.6,0],10,'ડીઝલ પાર્ટિક્યુલેટ ફિલ્ટર: ચેનલ એક છેડે બંધ (પ્લગ) હોય. ગેસ છિદ્રાળુ દીવાલમાંથી પસાર થાય, કાર્બન કણ ફસાય. ભરાઈ જાય ત્યારે રીજનરેશનથી કાર્બન બળીને CO2 બને.','કાર્બન કણ ફસાય → રીજનરેશન → CO2'],
+ def:['3. DEF ઇન્જેક્શન',[-2.8,-0.6,0],10,'ડોઝીંગ પંપ DEF (32.5% યુરિયા + પાણી) ને ઇન્જેક્ટર દ્વારા છાંટે. ગરમીથી યુરિયાનો એમોનિયા (NH3) બને; મિક્સર તેને ગેસમાં સરખો ભેળવે.','યુરિયા → એમોનિયા (NH3)'],
+ scr:['4. SCR',[0.8,0.4,0],10,'સિલેક્ટિવ કેટાલિટીક રિડક્શન: NOx અને NH3 મળીને નાઇટ્રોજન અને પાણીની વરાળ બને. વધેલો NH3 છેલ્લે ASC માં નાશ પામે.','NOx + NH3 → N2 + H2O'],
+ tail:['ટેલ પાઇપ',[3.8,0.0,0],9,'સ્વચ્છ ગેસ બહાર નીકળે.','સ્વચ્છ એક્ઝોસ્ટ']};
+const target=new V3(0.2,4.6,0),goalT=target.clone();let th=0.15,ph=1.46,dist=32,goalD=32,portrait=false,view='full';
+function setView(v){if(typeof selectPart==='function'&&selPart)selectPart(null);view=v;const d=VIEWS[v];goalT.set(...d[1]);goalD=d[2]*(portrait?1.45:1);
+  document.getElementById('tag').textContent=d[0];document.getElementById('mT').textContent=d[0];document.getElementById('mX').textContent=d[3];document.getElementById('mF').textContent=d[4];
+  document.querySelectorAll('#modes button').forEach(b=>b.classList.toggle('on',b.dataset.m===v))}
+document.querySelectorAll('#modes button').forEach(b=>b.onclick=()=>setView(b.dataset.m));
+const playB=document.getElementById('play');playB.onclick=()=>{playing=!playing;playB.textContent=playing?'વિરામ':'ચાલુ કરો'};
+document.getElementById('regen').onclick=()=>{if(trap.length<60)fillSoot(260);regen=true;regenT=0;setView('dpf')};
+const ptrs=new Map();let p0=0,d0=0;
+stage.addEventListener('pointerdown',e=>{stage.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});if(ptrs.size===2){const [a,b]=[...ptrs.values()];p0=Math.hypot(a.x-b.x,a.y-b.y);d0=dist}});
+stage.addEventListener('pointermove',e=>{if(!ptrs.has(e.pointerId))return;const p=ptrs.get(e.pointerId);
+  if(ptrs.size===1){th=Math.max(-0.9,Math.min(0.9,th-(e.clientX-p.x)*0.006));ph=Math.max(0.9,Math.min(1.75,ph-(e.clientY-p.y)*0.006))}
+  p.x=e.clientX;p.y=e.clientY;if(ptrs.size===2){const [a,b]=[...ptrs.values()];const d=Math.hypot(a.x-b.x,a.y-b.y);if(p0)dist=goalD=Math.min(50,Math.max(4,d0*p0/d))}});
+['pointerup','pointercancel'].forEach(t=>stage.addEventListener(t,e=>{ptrs.delete(e.pointerId);p0=0}));
+stage.addEventListener('wheel',e=>{e.preventDefault();goalD=dist=Math.min(50,Math.max(4,dist*(1+e.deltaY*0.001)))},{passive:false});
+function placeCam(){target.lerp(goalT,0.08);dist+=(goalD-dist)*0.08;
+  camera.position.set(target.x+dist*Math.sin(ph)*Math.sin(th),target.y+dist*Math.cos(ph),target.z+dist*Math.sin(ph)*Math.cos(th));camera.lookAt(target)}
+
+/* ================= PART HIGHLIGHT ================= */
+const PARTS=[
+ ['engine','ડીઝલ એન્જિન','અહીં દહન થાય. એક્ઝોસ્ટમાં કાર્બન કણ (સૂટ), NOx, CO અને HC નીકળે.'],
+ ['manifold','એક્ઝોસ્ટ મેનીફોલ્ડ','બધા સિલિન્ડરનો એક્ઝોસ્ટ ભેગો કરી ડાઉનપાઇપમાં મોકલે.'],
+ ['downpipe','ડાઉનપાઇપ','મેનીફોલ્ડથી આફ્ટર-ટ્રીટમેન્ટ સિસ્ટમ સુધી એક્ઝોસ્ટ લઈ જાય.'],
+ ['nox1','NOx સેન્સર (અપસ્ટ્રીમ)','એન્જિનમાંથી નીકળતો NOx માપે; તે પરથી ECU DEF ની માત્રા નક્કી કરે.'],
+ ['temp1','ટેમ્પ સેન્સર (DOC પહેલાં)','DOC અને DPF માટે એક્ઝોસ્ટનું તાપમાન માપે.'],
+ ['can1','DOC-DPF કેનિસ્ટર','સ્ટેનલેસ સ્ટીલનું હાઉસિંગ; અંદર DOC અને DPF બ્રિક.'],
+ ['doc','DOC','ડીઝલ ઓક્સિડેશન કેટાલિસ્ટ: CO અને HC ને CO2 અને પાણીમાં ફેરવે; NO નું NO2 બનાવી DPF ને મદદ કરે.'],
+ ['dpf','DPF','ડીઝલ પાર્ટિક્યુલેટ ફિલ્ટર: ચેનલ એક છેડે બંધ (પ્લગ). કાર્બન કણ દીવાલમાં ફસાય; રીજનરેશનથી બળીને CO2 બને.'],
+ ['dp','DPF પ્રેશર સેન્સર','DPF ની આગળ-પાછળનો દબાણ ફરક માપે. ફરક વધે એટલે DPF ભરાયું – ECU રીજનરેશન શરૂ કરે.'],
+ ['ubend','U-બેન્ડ પાઇપ','DPF થી DEF મિક્સર સુધી એક્ઝોસ્ટ લઈ જાય.'],
+ ['tank','DEF ટાંકી','વાદળી ઢાંકણ. DEF (AdBlue) નો સંગ્રહ; અંદર લેવલ સેન્સર.'],
+ ['pump','DEF પંપ મોડ્યુલ','DEF ને દબાણે ઇન્જેક્ટર સુધી મોકલે.'],
+ ['heater','DEF હીટર','DEF આશરે −11°C એ થીજે; હીટર તેને પીગળાવે.'],
+ ['defline','DEF લાઇન','પંપથી ઇન્જેક્ટર સુધી; ઠંડીમાં ગરમ રાખવા હીટેડ લાઇન.'],
+ ['injector','DEF ઇન્જેક્ટર (ડોઝીંગ મોડ્યુલ)','ECU ના આદેશથી DEF નો બારીક ફુવારો છાંટે.'],
+ ['mixer','મિક્સર','બ્લેડથી ગેસ ફેરવી DEF સરખું ભેળવે; ગરમીથી યુરિયાનો એમોનિયા (NH3) બને.'],
+ ['temp2','ટેમ્પ સેન્સર (SCR પહેલાં)','એક્ઝોસ્ટ પૂરતો ગરમ (આશરે 200°C થી વધુ) હોય ત્યારે જ DEF છંટાય.'],
+ ['can2','SCR કેનિસ્ટર','SCR અને ASC બ્રિકનું હાઉસિંગ.'],
+ ['scr','SCR','સિલેક્ટિવ કેટાલિટીક રિડક્શન: NOx અને NH3 મળીને N2 અને H2O બને.'],
+ ['asc','ASC','એમોનિયા સ્લિપ કેટાલિસ્ટ: વધેલો NH3 બહાર જતો રોકે.'],
+ ['nox2','NOx સેન્સર (ડાઉનસ્ટ્રીમ)','SCR પછીનો NOx માપે; સિસ્ટમ બરાબર કામ કરે છે કે નહીં તે ECU ને જણાવે.'],
+ ['tail','ટેલ પાઇપ','સ્વચ્છ ગેસ બહાર કાઢે.']];
+const YEL=new THREE.Color(0xF5C518);let selPart=null;const hiMats=[];
+function matFor(o,kind){const key=kind==='hi'?'hiM':'dimM';if(o.userData[key])return o.userData[key];
+  const f=m=>{const c=m.clone();if(kind==='hi'){if(c.emissive){c.emissive.copy(YEL);c.emissiveIntensity=.5;hiMats.push(c)}else c.color.lerp(YEL,.6)}else{c.transparent=true;c.opacity=.13;c.depthWrite=false}return c};
+  const o2=o.userData.orig;return o.userData[key]=Array.isArray(o2)?o2.map(f):f(o2)}
+const chipBox=document.getElementById('chips'),chipEl={};
+PARTS.forEach(([id,nm])=>{const b=document.createElement('button');b.textContent=nm;b.onclick=()=>selectPart(selPart===id?null:id);chipBox.appendChild(b);chipEl[id]=b});
+const bb=new THREE.Box3(),tb=new THREE.Box3(),bc=new V3(),bs=new V3();
+function selectPart(id){selPart=id;Object.entries(chipEl).forEach(([k,b])=>b.classList.toggle('on',k===id));
+  ALL.forEach(o=>{o.material=!id?o.userData.orig:(o.userData.part===id?matFor(o,'hi'):matFor(o,'dim'))});
+  const info=document.getElementById('info');
+  if(!id){info.hidden=true;document.getElementById('tag').textContent=VIEWS[view][0];goalT.set(...VIEWS[view][1]);goalD=VIEWS[view][2]*(portrait?1.45:1);return}
+  const P=PARTS.find(x=>x[0]===id);info.hidden=false;document.getElementById('iT').textContent=P[1];document.getElementById('iX').textContent=P[2];
+  document.getElementById('tag').textContent=P[1];
+  bb.makeEmpty();PM[id].forEach(o=>{tb.setFromObject(o);bb.union(tb)});bb.getCenter(bc);bb.getSize(bs);
+  goalT.copy(bc);goalD=Math.min(36,Math.max(5,Math.max(bs.x,bs.y)*2.3+2.5))*(portrait?1.35:1)}
+const ray=new THREE.Raycaster(),ndc=new THREE.Vector2();let downAt=null;
+stage.addEventListener('pointerdown',e=>{downAt={x:e.clientX,y:e.clientY}});
+stage.addEventListener('pointerup',e=>{if(!downAt||Math.hypot(e.clientX-downAt.x,e.clientY-downAt.y)>6){downAt=null;return}downAt=null;
+  const r=stage.getBoundingClientRect();ndc.set((e.clientX-r.left)/r.width*2-1,-((e.clientY-r.top)/r.height)*2+1);ray.setFromCamera(ndc,camera);
+  const hit=ray.intersectObjects(ALL,false).find(h=>h.point.z<=0.2);if(hit){const id=hit.object.userData.part;selectPart(selPart===id?null:id)}});
+
+function resize(){const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
+  const pr=w/h<0.9;if(pr!==portrait){portrait=pr;goalD=VIEWS[view][2]*(portrait?1.45:1);dist=goalD}}
+new ResizeObserver(resize).observe(stage);resize();setView('full');fillSoot(40);
+let last=performance.now();
+function loop(now){const dt=Math.max(0,Math.min(0.05,(now-last)/1000));last=now;update(dt);if(selPart){const k=.35+.3*Math.sin(now/220);hiMats.forEach(m=>m.emissiveIntensity=k)}placeCam();renderer.render(scene,camera);requestAnimationFrame(loop)}
+requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
